@@ -1,0 +1,76 @@
+{
+  "name": "light-blue-vue",
+  "version": "2.1.2",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve --port 3000",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@amcharts/amcharts4": "^4.10.9",
+    "@amcharts/amcharts4-geodata": "^4.1.18",
+    "animate.css": "^4.1.1",
+    "animated-number-vue": "^1.0.0",
+    "apexcharts": "^3.22.1",
+    "awesome-bootstrap-checkbox": "^1.0.1",
+    "babel-eslint": "^10.1.0",
+    "bootstrap": "^4.5.3",
+    "bootstrap-vue": "2.21.2",
+    "chart.js": "^2.9.4",
+    "css-loader": "^5.0.1",
+    "echarts": "5.0.0",
+    "eslint": "^7.17.0",
+    "eslint-plugin-vue": "^7.4.1",
+    "expose-loader": "^1.0.3",
+    "font-awesome": "4.7.0",
+    "glyphicons-halflings": "^1.9.1",
+    "highcharts": "^8.2.2",
+    "highcharts-vue": "^1.3.5",
+    "imports-loader": "^1.2.0",
+    "line-awesome": "1.3.0",
+    "node-sass": "^5.0.0",
+    "sass-loader": "^10.1.0",
+    "v-calendar": "^2.1.6",
+    "vue": "^2.6.12",
+    "vue-apexcharts": "^1.6.0",
+    "vue-chartjs": "^3.5.1",
+    "vue-echarts": "^5.0.0-beta.0",
+    "vue-router": "^3.4.8",
+    "vue-toasted": "^1.1.28",
+    "vue2-google-maps": "0.10.7",
+    "vuex": "^3.5.1",
+    "webpack-cli": "^4.3.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.5.10",
+    "@vue/cli-plugin-eslint": "^4.5.10",
+    "@vue/cli-service": "^4.5.10",
+    "vue-template-compiler": "^2.6.12"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
