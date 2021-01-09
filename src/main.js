@@ -6,7 +6,7 @@ import * as VueGoogleMaps from 'vue2-google-maps';
 import Toasted from 'vue-toasted';
 import VCalendar from 'v-calendar';
 import VueApexCharts from 'vue-apexcharts';
-
+import VueMask from 'v-mask'
 import store from './store';
 import router from './Routes';
 import App from './App';
@@ -25,6 +25,7 @@ Vue.use(VueGoogleMaps, {
 Vue.component('apexchart', VueApexCharts);
 Vue.mixin(layoutMixin);
 Vue.use(Toasted, {duration: 10000});
+Vue.use(VueMask);
 
 Vue.config.productionTip = false;
 

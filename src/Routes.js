@@ -9,6 +9,7 @@ import Icons from '@/pages/Icons/Icons';
 import Charts from '@/pages/Charts/Charts';
 import Dashboard from '@/pages/Visits/Visits';
 import Login from '@/pages/Login/Login';
+import Signup from '@/pages/Signup/Signup';
 import ErrorPage from '@/pages/Error/Error';
 
 Vue.use(Router);
@@ -25,6 +26,11 @@ export default new Router({
       path: '/error',
       name: 'Error',
       component: ErrorPage,
+    },
+    {
+      path: '/signup',
+      name: 'Signup',
+      component: Signup,
     },
     {
       path: '/app',

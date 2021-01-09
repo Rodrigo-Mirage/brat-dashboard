@@ -1,34 +1,36 @@
 <template>
   <div class="auth-page">
     <b-container>
-      <Widget class="widget-auth mx-auto" title="<h3 class='mt-0'>Login to your Web App</h3>" customHeader>
+      <Widget class="widget-auth mx-auto" title="<h3 class='mt-0'>Login</h3>" customHeader>
         <p class="widget-auth-info">
-          Use your email to sign in.
+          Use seu usuário para logar.
         </p>
-        <form class="mt" @submit.prevent="login">
+        <form novalidate class="mt" @submit.prevent="login">
           <b-alert class="alert-sm" variant="danger" :show="!!errorMessage">
             {{errorMessage}}
           </b-alert>
-          <b-form-group label="Email" label-for="email">
+          <b-form-group label="Usuário" label-for="username">
             <b-input-group>
               <b-input-group-text slot="prepend"><i class="la la-user text-white"></i></b-input-group-text>
-              <input id="email"
-                     ref="email"
+              <input id="username"
+                     v-model="form.username" 
+                     ref="username"
                      class="form-control input-transparent pl-3"
-                     type="email"
+                     type="text"
                      required
-                     placeholder="Email"/>
+                     placeholder="Usuário"/>
             </b-input-group>
           </b-form-group>
-          <b-form-group label="Password" label-for="password">
+          <b-form-group label="Senha" label-for="password">
             <b-input-group>
               <b-input-group-text slot="prepend"><i class="la la-lock text-white"></i></b-input-group-text>
               <input id="password"
+                     v-model="form.password" 
                      ref="password"
                      class="form-control input-transparent pl-3"
                      type="password"
                      required
-                     placeholder="Password"/>
+                     placeholder="Senha"/>
             </b-input-group>
           </b-form-group>
           <div class="bg-widget auth-widget-footer">
@@ -39,9 +41,10 @@
               Login
             </b-button>
             <p class="widget-auth-info mt-4">
-              Don't have an account? Sign up now!
+              Não tem uma conta? Crie uma agora!
             </p>
-            <router-link class="d-block text-center mb-4" to="login">Create an Account</router-link>
+            <router-link class="d-block text-center mb-4" to="signup">Criar conta</router-link>
+            <!--
             <div class="social-buttons">
               <b-button variant="primary" class="social-button">
                 <i class="social-icon social-google"></i>
@@ -52,6 +55,7 @@
                 <p class="social-text">MICROSOFT</p>
               </b-button>
             </div>
+            -->
           </div>
         </form>
       </Widget>
@@ -64,23 +68,44 @@
 
 <script>
 import Widget from '@/components/Widget/Widget';
+import AuthService from '@/service/AuthService'
 
 export default {
   name: 'LoginPage',
   components: { Widget },
   data() {
     return {
+      form:{
+        username: '',
+        password: '',
+      },
       errorMessage: null,
     };
   },
   methods: {
-    login() {
-      const email = this.$refs.email.value;
-      const password = this.$refs.password.value;
+    async login() {
+      this.errorMessage = null;
+      
+      const validateUsername = this.form.username.length > 0;
+      const validatePword = this.form.password.length >= 8;
+      if(!validateUsername){
+        this.errorMessage = "Usuário inválido"
+      }
+      if(!validatePword){
+        this.errorMessage = "Senha inválida"
+      }
+      if(!validateUsername && !validatePword){
+        this.errorMessage = "Usuário e senha inválidos"
+      }
 
-      if (email.length !== 0 && password.length !== 0) {
+      const response = await AuthService.postLogin(this.form.username, this.form.password);
+      console.log(response);
+      
+      if (validateUsername && validatePword && response) {
         window.localStorage.setItem('authenticated', true);
         this.$router.push('/app/dashboard');
+      }else{
+        this.errorMessage = "Usuário não existe"
       }
     },
   },
