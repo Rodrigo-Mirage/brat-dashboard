@@ -3,18 +3,25 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
   name: 'App',
   created() {
     const currentPath = this.$router.history.current.path;
 
     if (window.localStorage.getItem('authenticated') === 'false') {
-      this.$router.push('/login');
+      if(this.$router.url !== '/login'){
+        this.$router.push('/login');
+      }
     }
-
-    if (currentPath === '/' || currentPath === '/app') {
+    else if (currentPath === '/' || currentPath === '/app') {
       this.$router.push('/app/dashboard');
     }
+  },  
+  computed: {
+    ...mapState('layout', {
+      authToken: state => state.authToken,
+    }),
   },
 };
 </script>

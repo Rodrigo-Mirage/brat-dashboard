@@ -68,8 +68,8 @@
 
 <script>
 import Widget from '@/components/Widget/Widget';
-import AuthService from '@/service/AuthService'
-
+//import AuthService from '@/service/AuthService'
+import { mapActions, mapState } from 'vuex';
 export default {
   name: 'LoginPage',
   components: { Widget },
@@ -83,31 +83,39 @@ export default {
     };
   },
   methods: {
+    ...mapActions(
+      'layout', ['authLogin'],
+    ),
     async login() {
       this.errorMessage = null;
       
       const validateUsername = this.form.username.length > 0;
       const validatePword = this.form.password.length >= 8;
-      if(!validateUsername){
-        this.errorMessage = "Usuário inválido"
-      }
-      if(!validatePword){
-        this.errorMessage = "Senha inválida"
-      }
-      if(!validateUsername && !validatePword){
-        this.errorMessage = "Usuário e senha inválidos"
-      }
 
-      const response = await AuthService.postLogin(this.form.username, this.form.password);
-      console.log(response);
-      
-      if (validateUsername && validatePword && response) {
-        window.localStorage.setItem('authenticated', true);
-        this.$router.push('/app/dashboard');
+      if(!validateUsername){
+        this.errorMessage = "Usuário inválido";
+        if(!validatePword){
+          this.errorMessage = "Usuário e senha inválidos";
+        }
+      }
+      else if(!validatePword){
+        this.errorMessage = "Senha inválida"
       }else{
-        this.errorMessage = "Usuário não existe"
+        const payload = {username: this.form.username, password: this.form.password}
+        await this.authLogin(payload);
+        //console.log(this.authToken)
+        if(this.authToken === null){
+          this.errorMessage = "Usuário não existe"
+        }else{
+          this.$router.push('/app/dashboard');  
+        }
       }
     },
+  },
+  computed: {
+    ...mapState('layout', {
+      authToken: state => state.authToken,
+    }),
   },
   created() {
     if (window.localStorage.getItem('authenticated') === 'true') {

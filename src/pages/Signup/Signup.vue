@@ -295,8 +295,7 @@ export default {
   },
   methods: {
     async submit() {
-        const validation = this.inputValidation()
-        if(validation){
+        if(this.inputValidation()){
           const response = await UserService.postSignup(
                     this.form.first_name,
                     this.form.last_name,
