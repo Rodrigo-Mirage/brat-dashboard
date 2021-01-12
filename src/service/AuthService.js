@@ -6,6 +6,6 @@ export default {
         username: username,
         password: password,
         });
-        return response.data.token;
+        return response;
     }
 }

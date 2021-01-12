@@ -103,7 +103,6 @@ export default {
       }else{
         const payload = {username: this.form.username, password: this.form.password}
         await this.authLogin(payload);
-        //console.log(this.authToken)
         if(this.authToken === null){
           this.errorMessage = "Usuário não existe"
         }else{
@@ -114,7 +113,7 @@ export default {
   },
   computed: {
     ...mapState('layout', {
-      authToken: state => state.authToken,
+      authToken: state => state.authToken
     }),
   },
   created() {

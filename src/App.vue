@@ -3,11 +3,20 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 export default {
   name: 'App',
-  created() {
+  methods:{
+    ...mapActions(
+      'layout', ['saveUser'],
+    ),
+  },
+  async created() {
     const currentPath = this.$router.history.current.path;
+
+    if (window.localStorage.getItem('authenticated') === 'true' && window.localStorage.getItem('curUser')) {
+      await this.saveUser(window.localStorage.getItem('curUser'));
+    }
 
     if (window.localStorage.getItem('authenticated') === 'false') {
       if(this.$router.url !== '/login'){

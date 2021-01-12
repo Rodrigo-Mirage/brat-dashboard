@@ -1,23 +1,7 @@
-//import axios from 'axios'
+import axios from 'axios'
 
 export default {
   async postSignup (first_name, last_name, username, email, password, gender, birthday, phone_number, stream_link, twitch, twitter, facebook, instagram, youtube){
-    console.log(first_name,
-                last_name,
-                username,
-                email,
-                password,
-                gender,
-                birthday,
-                phone_number,
-                stream_link,
-                twitch,
-                twitter,
-                facebook,
-                instagram,
-                youtube);
-    return true;
-    /*
     const response = await axios.post('http://localhost:3000/user', {
       first_name: first_name,
       last_name: last_name,
@@ -35,6 +19,9 @@ export default {
       youtube: youtube,
     });
     return response;
-    */
+  },
+  async getUser(id){
+    const response = await axios.get('http://localhost:3000/user/'+id);
+    return response;
   }
 }

@@ -6,7 +6,7 @@
             <span class="avatar rounded-circle thumb-sm float-left mr-2">
               <img class="rounded-circle" src="../../assets/people/a5.jpg" alt="..." />
             </span>
-            <span class="small">Username</span>
+            <span class="small">{{this.first_name}} {{this.last_name}}</span>
             <span class="mx-2 circle bg-primary text-white fs-sm fw-bold">13</span>
           </template>
           <notifications />
@@ -116,6 +116,8 @@ export default {
     ...mapState('layout', {
       sidebarClose: state => state.sidebarClose,
       sidebarStatic: state => state.sidebarStatic,
+      first_name: state => state.first_name,
+      last_name: state => state.last_name,
     }),
   },
   methods: {
