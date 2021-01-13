@@ -6,6 +6,8 @@ export default {
     sidebarClose: true,
     sidebarActiveElement: null,
     authToken: null,
+    sessionId: null,
+
     first_name: '',
     last_name: '',
     username: '',
@@ -47,7 +49,7 @@ export default {
       state.facebook = facebook;
       state.instagram = instagram;
       state.youtube = youtube;
-    }
+    },
   },
   actions: {
     switchSidebar({ commit }, value) {
@@ -83,6 +85,6 @@ export default {
         instagram: user.data.res.instagram,
         youtube: user.data.res.youtube,
       })
-    }
+    },
   },
 };

@@ -70,6 +70,7 @@
 import Widget from '@/components/Widget/Widget';
 //import AuthService from '@/service/AuthService'
 import { mapActions, mapState } from 'vuex';
+
 export default {
   name: 'LoginPage',
   components: { Widget },
@@ -101,8 +102,14 @@ export default {
       else if(!validatePword){
         this.errorMessage = "Senha inválida"
       }else{
+
         const payload = {username: this.form.username, password: this.form.password}
-        await this.authLogin(payload);
+        await this.$store.dispatch('layout/authLogin', payload);
+        //await this.authLogin(payload);
+
+        //const wsPayload = {"function":"login", "session_id":"1", "data":{"username": "ddd", "password": "12345678"}}
+        //this.websocketConnection.send(JSON.stringify(wsPayload));
+
         if(this.authToken === null){
           this.errorMessage = "Usuário não existe"
         }else{
@@ -113,7 +120,8 @@ export default {
   },
   computed: {
     ...mapState('layout', {
-      authToken: state => state.authToken
+      authToken: state => state.authToken,
+      websocketConnection: state => state.websocketConnection
     }),
   },
   created() {

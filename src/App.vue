@@ -30,6 +30,7 @@ export default {
   computed: {
     ...mapState('layout', {
       authToken: state => state.authToken,
+      sessionId: state => state.sessionId
     }),
   },
 };
