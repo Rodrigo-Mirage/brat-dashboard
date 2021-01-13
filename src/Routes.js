@@ -8,6 +8,7 @@ import Notifications from '@/pages/Notifications/Notifications';
 import Icons from '@/pages/Icons/Icons';
 import Charts from '@/pages/Charts/Charts';
 import Dashboard from '@/pages/Visits/Visits';
+import Admin from '@/pages/Admin/Admin';
 import Login from '@/pages/Login/Login';
 import Signup from '@/pages/Signup/Signup';
 import ErrorPage from '@/pages/Error/Error';
@@ -66,6 +67,11 @@ export default new Router({
           path: 'components/charts',
           name: 'Charts',
           component: Charts,
+        },
+        {
+          path: 'admin',
+          name: 'Admin',
+          component: Admin,
         },
       ],
     },

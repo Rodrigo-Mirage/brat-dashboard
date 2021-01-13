@@ -7,6 +7,9 @@ export default function websocket(){
           case "authLogin":
             store.commit('layout/authenticate');
             break;
+          case "listUsers":
+            store.commit('layout/listUsers', payload.data);
+            break;
           default:
             console.log("Mensagem do servidor: ", payload);
             //store.commit('receiveData', payload);

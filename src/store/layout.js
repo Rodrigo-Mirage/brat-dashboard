@@ -8,6 +8,7 @@ export default {
     authToken: null,
     authenticate: null,
     sessionId: null,
+    userList: [],
 
     first_name: '',
     last_name: '',
@@ -53,6 +54,11 @@ export default {
     },
     authenticate(state){
       state.authenticate = true;
+    },
+    listUsers(state, payload){
+      for (let i = 0; i<payload[0].length; i++){
+       state.userList.push(payload[0][i]);
+      }
     },
     SOCKET_SEND(message){
       console.log('message sent: ' + message);

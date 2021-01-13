@@ -8,12 +8,20 @@
     </header>
     <ul class="nav">
       <NavLink
-              :activeItem="activeItem"
-              header="Dashboard"
-              link="/app/dashboard"
-              iconName="flaticon-home"
-              index="dashboard"
-              isHeader
+        :activeItem="activeItem"
+        header="Dashboard"
+        link="/app/dashboard"
+        iconName="flaticon-home"
+        index="dashboard"
+        isHeader
+      />
+      <NavLink
+        :activeItem="activeItem"
+        header="Admin"
+        link="/app/admin"
+        iconName="flaticon-home"
+        index="admin"
+        isHeader
       />
     </ul>
   </nav>
