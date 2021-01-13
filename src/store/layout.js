@@ -6,6 +6,7 @@ export default {
     sidebarClose: true,
     sidebarActiveElement: null,
     authToken: null,
+    authenticate: null,
     sessionId: null,
 
     first_name: '',
@@ -49,6 +50,12 @@ export default {
       state.facebook = facebook;
       state.instagram = instagram;
       state.youtube = youtube;
+    },
+    authenticate(state){
+      state.authenticate = true;
+    },
+    SOCKET_SEND(message){
+      console.log('message sent: ' + message);
     },
   },
   actions: {

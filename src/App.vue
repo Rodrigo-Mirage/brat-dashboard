@@ -19,9 +19,9 @@ export default {
     }
 
     if (window.localStorage.getItem('authenticated') === 'false') {
-      if(this.$router.url !== '/login'){
-        this.$router.push('/login');
-      }
+      //if(this.$router.url !== '/login'){
+      //  this.$router.push('/login');
+      //}
     }
     else if (currentPath === '/' || currentPath === '/app') {
       this.$router.push('/app/dashboard');

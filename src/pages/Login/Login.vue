@@ -77,8 +77,8 @@ export default {
   data() {
     return {
       form:{
-        username: '',
-        password: '',
+        username: 'vitorch',
+        password: '12345678',
       },
       errorMessage: null,
     };
@@ -102,15 +102,18 @@ export default {
       else if(!validatePword){
         this.errorMessage = "Senha inválida"
       }else{
-
+        //HTTP Login
         const payload = {username: this.form.username, password: this.form.password}
         await this.$store.dispatch('layout/authLogin', payload);
-        //await this.authLogin(payload);
 
-        //const wsPayload = {"function":"login", "session_id":"1", "data":{"username": "ddd", "password": "12345678"}}
-        //this.websocketConnection.send(JSON.stringify(wsPayload));
+        //WS Login
+        //const wsPayload = {"function":"login", "session_id":"1", "data":{"username": this.form.username, "password": this.form.password}};
+        const wsPayload = {"function":"login", "session_id":"1", "data":{"token": this.authToken}};
+        await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+        //set timeout?
 
-        if(this.authToken === null){
+        console.log(this.authenticate);
+        if(this.authenticate === null || this.authenticate === undefined){
           this.errorMessage = "Usuário não existe"
         }else{
           this.$router.push('/app/dashboard');  
@@ -121,7 +124,7 @@ export default {
   computed: {
     ...mapState('layout', {
       authToken: state => state.authToken,
-      websocketConnection: state => state.websocketConnection
+      authenticate: state => state.authenticate
     }),
   },
   created() {

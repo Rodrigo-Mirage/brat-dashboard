@@ -5,16 +5,16 @@ export default function websocket(){
       let payload = JSON.parse(event.data);
       switch(payload.msg){
           case "authLogin":
-            store.commit();
+            store.commit('layout/authenticate');
             break;
           default:
-            store.commit('receiveData', payload);
+            console.log("Mensagem do servidor: ", payload);
+            //store.commit('receiveData', payload);
             return;
       }
     });
     store.subscribe(mutation => {
-      console.log("FOI");
-      if (mutation.type === 'SOCKET_SEND') {
+      if (mutation.type === 'layout/SOCKET_SEND') {
         wss.send(JSON.stringify(mutation.payload))
       }
     })
