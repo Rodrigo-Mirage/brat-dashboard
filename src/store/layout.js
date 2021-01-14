@@ -1,5 +1,7 @@
 import AuthService from '@/service/AuthService'
 import UserService from '@/service/UserService'
+import router from '../Routes'
+
 export default {
   namespaced: true,
   state: {
@@ -54,11 +56,15 @@ export default {
     },
     authenticate(state){
       state.authenticate = true;
+      router.push('/app/dashboard');
     },
     listUsers(state, payload){
+      state.userList = payload[0];
+      /*
       for (let i = 0; i<payload[0].length; i++){
        state.userList.push(payload[0][i]);
       }
+      */
     },
     SOCKET_SEND(message){
       console.log('message sent: ' + message);

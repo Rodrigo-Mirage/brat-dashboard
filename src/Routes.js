@@ -10,6 +10,7 @@ import Charts from '@/pages/Charts/Charts';
 import Dashboard from '@/pages/Visits/Visits';
 import Admin from '@/pages/Admin/Admin';
 import Login from '@/pages/Login/Login';
+import UserView from '@/pages/UserView/UserView';
 import Signup from '@/pages/Signup/Signup';
 import ErrorPage from '@/pages/Error/Error';
 
@@ -73,6 +74,11 @@ export default new Router({
           name: 'Admin',
           component: Admin,
         },
+        {
+          path: 'user/:id',
+          name: 'UserView',
+          component: UserView,
+        }
       ],
     },
     {

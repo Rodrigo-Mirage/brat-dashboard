@@ -8,7 +8,7 @@
         <b-row>
       <b-col>
         <Widget
-          title="<h5>Table <span class='fw-semi-bold'>Styles</span></h5>"
+          title="<h5>Permissions <span class='fw-semi-bold'>Table</span></h5>"
           customHeader settings close
         >
           <div class="table-resposive">
@@ -21,16 +21,27 @@
                   <th>Username</th>
                   <th>Email</th>
                   <th>Permission</th>
+                  <th>Update</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="row in users" :key="row.id">
+                <tr v-for="row in this.userList" :key="row.id">
                   <td>{{row.id}}</td>
                   <td>{{row.first_name}}</td>
                   <td>{{row.last_name}}</td>
                   <td>{{row.username}}</td>
                   <td>{{row.email}}</td>
-                  <td>{{row.permission}}</td>
+
+                  <td v-if="row.permission === 'Admin'"><b-badge variant="success">{{row.permission}}</b-badge></td>
+                  <td v-else-if="row.permission === 'Tech'"><b-badge variant="primary">{{row.permission}}</b-badge></td>
+                  <td v-else-if="row.permission === 'Financ'"><b-badge variant="danger">{{row.permission}}</b-badge></td>
+                  <td v-else-if="row.permission === 'Staff-Brat2021-Lead'"><b-badge variant="warning">{{row.permission}}</b-badge></td>
+                  <td v-else-if="row.permission === ''"></td>
+                  <td v-else><b-badge variant="light">{{row.permission}}</b-badge></td>
+
+                  <td>
+                    <router-link to="/app/user/1"><b-button variant="dark">View</b-button></router-link>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -60,9 +71,6 @@ export default {
   name: 'Admin',
   data() {
     return{
-      users:[
-        
-      ]
     }
   },
   methods: {
@@ -81,16 +89,6 @@ export default {
     const wsPayload = {"function":"getUsers", "session_id":"1"};
     await this.$store.commit('layout/SOCKET_SEND', wsPayload);
 
-    for(let user in this.userList){
-      this.users.push({
-        id: this.userList[user].id,
-        first_name: this.userList[user].first_name,
-        last_name: this.userList[user].last_name,
-        username: this.userList[user].username,
-        email: this.userList[user].email,
-        permission: "admin"
-      })
-    }
   },
 };
 </script>

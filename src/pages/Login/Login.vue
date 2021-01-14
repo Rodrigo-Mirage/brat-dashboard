@@ -110,13 +110,10 @@ export default {
         //const wsPayload = {"function":"login", "session_id":"1", "data":{"username": this.form.username, "password": this.form.password}};
         const wsPayload = {"function":"login", "session_id":"1", "data":{"token": this.authToken}};
         await this.$store.commit('layout/SOCKET_SEND', wsPayload);
-        //set timeout?
-
+        
         console.log(this.authenticate);
         if(this.authenticate === null || this.authenticate === undefined){
           this.errorMessage = "Usuário não existe"
-        }else{
-          this.$router.push('/app/dashboard');  
         }
       }
     },
