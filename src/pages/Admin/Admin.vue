@@ -32,13 +32,14 @@
                   <td>{{row.username}}</td>
                   <td>{{row.email}}</td>
 
-                  <td v-if="row.permission === 'Admin'"><b-badge variant="success">{{row.permission}}</b-badge></td>
-                  <td v-else-if="row.permission === 'Tech'"><b-badge variant="primary">{{row.permission}}</b-badge></td>
-                  <td v-else-if="row.permission === 'Financ'"><b-badge variant="danger">{{row.permission}}</b-badge></td>
-                  <td v-else-if="row.permission === 'Staff-Brat2021-Lead'"><b-badge variant="warning">{{row.permission}}</b-badge></td>
-                  <td v-else-if="row.permission === ''"></td>
-                  <td v-else><b-badge variant="light">{{row.permission}}</b-badge></td>
-
+                  <td><small v-for="permission in row.permissions" :key="permission">
+                    <b-badge v-if="permission === 'Admin'" variant="success">{{permission}}</b-badge>
+                    <b-badge v-else-if="permission === 'Tech'" variant="primary">{{permission}}</b-badge>
+                    <b-badge v-else-if="permission === 'Financ'" variant="danger">{{permission}}</b-badge>
+                    <b-badge v-else-if="permission === 'Staff-Brat2021-Lead'" variant="warning">{{permission}}</b-badge>
+                    <b-badge v-else-if="permission === ''"></b-badge>
+                    <b-badge v-else variant="light">{{permission}}</b-badge>
+                  </small></td>
                   <td>
                     <router-link to="/app/user/1"><b-button variant="dark">View</b-button></router-link>
                   </td>
