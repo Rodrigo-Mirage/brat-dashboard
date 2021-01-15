@@ -41,7 +41,7 @@
                     <b-badge v-else variant="light">{{permission}}</b-badge>
                   </small></td>
                   <td>
-                    <router-link to="/app/user/1"><b-button variant="dark">View</b-button></router-link>
+                    <router-link :to="`/app/user/${row.id}`"><b-button variant="dark">View</b-button></router-link>
                   </td>
                 </tr>
               </tbody>
