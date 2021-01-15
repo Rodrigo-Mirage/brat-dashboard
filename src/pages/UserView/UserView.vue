@@ -73,20 +73,22 @@ export default {
   },
   created(){
      this.user = this.userList.find(element => String(element.id) === this.id);
+     console.log('id: ' + this.curUserId);
   },
   computed: {
     ...mapState('layout', {
-      userList: state => state.userList
+      userList: state => state.userList,
+      curUserId: state => state.id
     }),
   },
   methods: {
     async removePermission(permission){
-      const wsPayload = {"function":"removePermission", "session_id":"1", "data":{"user": this.user.id, "permission": permission}};
+      const wsPayload = {"function":"removePermission", "session_id":"1", "data":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": permission}};
       await this.$store.commit('layout/SOCKET_SEND', wsPayload);
       console.log("permissão removida: " + permission);
     },
     async addPermission(){
-      const wsPayload = {"function":"addPermission", "session_id":"1", "data":{"user": this.user.id, "permission": this.selectedPermission}};
+      const wsPayload = {"function":"addPermission", "session_id":"1", "data":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": this.selectedPermission}};
       await this.$store.commit('layout/SOCKET_SEND', wsPayload);
     }
   }

@@ -12,6 +12,7 @@ export default {
     sessionId: null,
     userList: [],
 
+    id:'',
     first_name: '',
     last_name: '',
     username: '',
@@ -40,7 +41,8 @@ export default {
     authLogin(state, token){
       state.authToken = token;
     },
-    saveUser(state, {first_name, last_name, username, email, gender, phone_number, stream_link, twitch, twitter, facebook, instagram, youtube}){
+    saveUser(state, {id, first_name, last_name, username, email, gender, phone_number, stream_link, twitch, twitter, facebook, instagram, youtube}){
+      state.id = id;
       state.first_name = first_name;
       state.last_name = last_name;
       state.username = username;
@@ -91,6 +93,7 @@ export default {
     async saveUser({ commit }, id){
       const user = await UserService.getUser(id);
       commit('saveUser', {
+        id: id,
         first_name: user.data.res.first_name,
         last_name: user.data.res.last_name,
         username: user.data.res.username,
