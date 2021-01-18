@@ -121,7 +121,7 @@ export default {
     }),
   },
   methods: {
-    ...mapActions('layout', ['toggleSidebar', 'toggleChat', 'switchSidebar', 'changeSidebarActive']),
+    ...mapActions('layout', ['toggleSidebar', 'toggleChat', 'switchSidebar', 'changeSidebarActive', 'logoutAction']),
     switchSidebarMethod() {
       if (!this.sidebarClose) {
         this.switchSidebar(true);
@@ -134,11 +134,7 @@ export default {
       }
     },
     logout() {
-      window.localStorage.setItem('authenticated', false);
-      window.localStorage.removeItem('token');
-      window.localStorage.removeItem('curUser');
-      this.$store.state.authToken = null;
-      this.$router.push('/login');
+      this.logoutAction();
     },
   },
 };

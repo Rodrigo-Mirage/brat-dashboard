@@ -10,7 +10,6 @@ export default {
     curReq: 1,
     authToken: null,
     authenticate: null,
-    sessionId: null,
     userList: [],
 
     id:'',
@@ -74,6 +73,29 @@ export default {
     },
     incrementReq(state){
       state.curReq++;
+    },
+    logout(state){
+      console.log(state);
+      window.localStorage.setItem('authenticated', false);
+      window.localStorage.removeItem('token');
+      window.localStorage.removeItem('curUser');
+      state.authToken = null;
+      state.authenticate = false;
+      state.curReq = 1;
+      state.id = '';
+      state.first_name = '';
+      state.last_name = '';
+      state.username = '';
+      state.email = '';
+      state.gender = '';
+      state.phone_number = '';
+      state.stream_link = '';
+      state.twitch = '';
+      state.twitter = '';
+      state.facebook = '';
+      state.instagram = '';
+      state.youtube = '';
+      router.push('/login');
     }
   },
   actions: {
@@ -112,5 +134,8 @@ export default {
         youtube: user.data.res.youtube,
       })
     },
+    logoutAction({ commit }){
+      commit('logout');
+    }
   },
 };

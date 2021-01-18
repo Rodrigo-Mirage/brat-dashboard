@@ -13,6 +13,8 @@
             {{errorMessage}}
           </b-alert>
 
+          <v-autocomplete>aaa</v-autocomplete>
+
           <b-form-group label="" label-for="gameName">
             <b-input-group>
               <input id="gameName"
