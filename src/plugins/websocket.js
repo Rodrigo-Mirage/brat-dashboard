@@ -3,11 +3,11 @@ export default function websocket(){
   return store => {
     wss.addEventListener('message', function (event){
       let payload = JSON.parse(event.data);
-      switch(payload.msg){
-          case "authLogin":
+      switch(payload.endpoint){
+          case "login":
             store.commit('layout/authenticate');
             break;
-          case "listUsers":
+          case "getUsers":
             store.commit('layout/listUsers', payload.data);
             break;
           default:

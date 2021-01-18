@@ -139,7 +139,7 @@ export default {
       return {
         series: [{data: [1, 7, 3, 5, 7, 8]}],
         options1: {
-          colors: [this.appConfig.colors.green],
+          colors: '#2D8515',//[this.appConfig.colors.green],
           plotOptions: {
             bar: {
               columnWidth: '50%'
@@ -147,7 +147,7 @@ export default {
           }
         },
         options2: {
-          colors: [this.appConfig.colors.red],
+          colors: '#F45722',//[this.appConfig.colors.red],
           plotOptions: {
             bar: {
               columnWidth: '50%'
