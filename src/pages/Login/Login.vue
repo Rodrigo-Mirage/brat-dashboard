@@ -107,11 +107,10 @@ export default {
         await this.$store.dispatch('layout/authLogin', payload);
 
         //WS Login
-        //const wsPayload = {"function":"login", "session_id":"1", "data":{"username": this.form.username, "password": this.form.password}};
-        const wsPayload = {"function":"login", "session_id":"1", "data":{"token": this.authToken}};
+        const wsPayload = {"endpoint":"login", "id":this.curReq, "info":{"token": this.authToken}};
+        this.$store.commit('layout/incrementReq');
         await this.$store.commit('layout/SOCKET_SEND', wsPayload);
         
-        console.log(this.authenticate);
         if(this.authenticate === null || this.authenticate === undefined){
           this.errorMessage = "Usuário não existe"
         }
@@ -121,7 +120,8 @@ export default {
   computed: {
     ...mapState('layout', {
       authToken: state => state.authToken,
-      authenticate: state => state.authenticate
+      authenticate: state => state.authenticate,
+      curReq: state => state.curReq,
     }),
   },
   created() {

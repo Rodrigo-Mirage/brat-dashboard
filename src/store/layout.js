@@ -7,6 +7,7 @@ export default {
   state: {
     sidebarClose: true,
     sidebarActiveElement: null,
+    curReq: 1,
     authToken: null,
     authenticate: null,
     sessionId: null,
@@ -71,6 +72,9 @@ export default {
     SOCKET_SEND(message){
       console.log('message sent: ' + message);
     },
+    incrementReq(state){
+      state.curReq++;
+    }
   },
   actions: {
     switchSidebar({ commit }, value) {

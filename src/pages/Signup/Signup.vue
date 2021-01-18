@@ -49,6 +49,19 @@
             </b-input-group>
           </b-form-group>
 
+          <b-form-group label="" label-for="nickname">
+            <b-input-group>
+              <b-input-group-text slot="prepend"><i class="la la-user text-white"></i></b-input-group-text>
+              <input id="nickname"
+                     v-model="form.nickname" 
+                     ref="nickname"
+                     class="form-control input-transparent pl-3"
+                     type="text"
+                     required
+                     placeholder="Nickname"/>
+            </b-input-group>
+          </b-form-group>
+
           <b-form-group label="" label-for="email">
             <b-input-group>
               <b-input-group-text slot="prepend"><i class="la la-user text-white"></i></b-input-group-text>
@@ -244,6 +257,7 @@ export default {
         first_name: 'Vitor',
         last_name: 'Hardoim',
         username: 'vitorch',
+        nickname: 'Ranzo',
         email: 'vitor@gmail.com',
         gender: 'M',
         birthday: '1997-05-26',
@@ -260,6 +274,7 @@ export default {
         first_name: '',
         last_name: '',
         username: '',
+        nickname: '',
         email: '',
         gender: 'M',
         birthday: '',
@@ -278,8 +293,8 @@ export default {
         first_name: null,
         last_name: null,
         username: null,
+        nickname: null,
         email: null,
-        //gender: null,
         birthday: null,
         phone_number: null,
         password1: null,
@@ -300,6 +315,7 @@ export default {
                     this.form.first_name,
                     this.form.last_name,
                     this.form.username,
+                    this.form.nickname,
                     this.form.email,
                     this.form.password1,
                     this.form.gender,
@@ -336,6 +352,10 @@ export default {
       }
       if(!this.form.username || /^\s*$/.test(this.form.username)) {
         this.errors.username = 'Usuário: Campo obrigatório';
+        validationCheck = false
+      }
+      if(!this.form.nickname || /^\s*$/.test(this.form.nickname)) {
+        this.errors.nickname = 'Nickname: Campo obrigatório';
         validationCheck = false
       }
       if(!this.form.email || !emailRegex.test(this.form.email)) {

@@ -23,6 +23,14 @@
         index="admin"
         isHeader
       />
+      <NavLink
+        :activeItem="activeItem"
+        header="Submit a Run"
+        link="/app/submitrun"
+        iconName="flaticon-home"
+        index="submitrun"
+        isHeader
+      />
     </ul>
   </nav>
   </b-collapse>

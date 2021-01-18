@@ -1,11 +1,12 @@
 import axios from 'axios'
 
 export default {
-  async postSignup (first_name, last_name, username, email, password, gender, birthday, phone_number, stream_link, twitch, twitter, facebook, instagram, youtube){
+  async postSignup (first_name, last_name, username, nickname, email, password, gender, birthday, phone_number, stream_link, twitch, twitter, facebook, instagram, youtube){
     const response = await axios.post('http://localhost:3000/user', {
       first_name: first_name,
       last_name: last_name,
       username: username,
+      nickname: nickname,
       email: email,
       gender: gender,
       birthday: birthday,

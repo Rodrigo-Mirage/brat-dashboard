@@ -78,18 +78,21 @@ export default {
   computed: {
     ...mapState('layout', {
       userList: state => state.userList,
-      curUserId: state => state.id
+      curUserId: state => state.id,
+      curReq: state => state.curReq
     }),
   },
   methods: {
     async removePermission(permission){
-      const wsPayload = {"function":"removePermission", "session_id":"1", "data":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": permission}};
+      const wsPayload = {"endpoint":"removePermission", "id":this.curReq, "info":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": permission}};
       await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+      this.$store.commit('layout/incrementReq');
       console.log("permissão removida: " + permission);
     },
     async addPermission(){
-      const wsPayload = {"function":"addPermission", "session_id":"1", "data":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": this.selectedPermission}};
+      const wsPayload = {"endpoint":"addPermission", "id":this.curReq, "info":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": this.selectedPermission}};
       await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+      this.$store.commit('layout/incrementReq');
     }
   }
 };

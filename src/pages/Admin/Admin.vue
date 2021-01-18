@@ -5,7 +5,7 @@
         <small>Template</small>
       </small>
     </h1>
-        <b-row>
+    <b-row>
       <b-col>
         <Widget
           title="<h5>Permissions <span class='fw-semi-bold'>Table</span></h5>"
@@ -79,16 +79,17 @@ export default {
   },
   computed: {
     ...mapState('layout', {
-      userList: state => state.userList
+      userList: state => state.userList,
+      curReq: state => state.curReq
     }),
   },
   components: {
     Widget,
   },
   async created(){
-
-    const wsPayload = {"function":"getUsers", "session_id":"1"};
+    const wsPayload = {"endpoint":"getUsers", "id":this.curReq};
     await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+    this.$store.commit('layout/incrementReq');
 
   },
 };

@@ -12,6 +12,7 @@ import Admin from '@/pages/Admin/Admin';
 import Login from '@/pages/Login/Login';
 import UserView from '@/pages/UserView/UserView';
 import Signup from '@/pages/Signup/Signup';
+import RunSubmit from '@/pages/RunSubmit/RunSubmit';
 import ErrorPage from '@/pages/Error/Error';
 
 Vue.use(Router);
@@ -78,7 +79,12 @@ export default new Router({
           path: 'user/:id',
           name: 'UserView',
           component: UserView,
-        }
+        },
+        {
+          path: 'submitrun',
+          name: 'Submitrun',
+          component: RunSubmit,
+        },
       ],
     },
     {
