@@ -12,6 +12,8 @@ export default {
     authenticate: null,
     userList: [],
     gamesList: [],
+    eventsList: [],
+    extrasList: [],
 
     id:'',
     first_name: '',
@@ -63,14 +65,15 @@ export default {
     },
     listUsers(state, payload){
       state.userList = payload[0];
-      /*
-      for (let i = 0; i<payload[0].length; i++){
-       state.userList.push(payload[0][i]);
-      }
-      */
     },
     listGames(state, payload){
       state.gamesList = payload[0];
+    },
+    listEvents(state, payload){
+      state.eventsList = payload[0];
+    },
+    listExtras(state, payload){
+      state.extrasList = payload[0];
     },
     SOCKET_SEND(state, message){
       console.log('message sent: ' + message);

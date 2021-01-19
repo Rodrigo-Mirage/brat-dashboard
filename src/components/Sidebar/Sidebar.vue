@@ -17,6 +17,14 @@
       />
       <NavLink
         :activeItem="activeItem"
+        header="Submit a Run"
+        link="/app/submitrun"
+        iconName="flaticon-home"
+        index="submitrun"
+        isHeader
+      />
+      <NavLink
+        :activeItem="activeItem"
         header="Admin"
         link="/app/admin"
         iconName="flaticon-home"
@@ -25,10 +33,26 @@
       />
       <NavLink
         :activeItem="activeItem"
-        header="Submit a Run"
-        link="/app/submitrun"
+        header="Events"
+        link="/app/events"
         iconName="flaticon-home"
-        index="submitrun"
+        index="events"
+        isHeader
+      />
+      <NavLink
+        :activeItem="activeItem"
+        header="Games"
+        link="/app/games"
+        iconName="flaticon-home"
+        index="games"
+        isHeader
+      />
+      <NavLink
+        :activeItem="activeItem"
+        header="Extras"
+        link="/app/extras"
+        iconName="flaticon-home"
+        index="extras"
         isHeader
       />
     </ul>

@@ -13,6 +13,12 @@ export default function websocket(){
           case "getGames":
             store.commit('layout/listGames', payload.data);
             break;
+          case "getEvents":
+            store.commit('layout/listEvents', payload.data);
+            break;
+          case "getEventExtras":
+            store.commit('layout/listExtras', payload.data);
+            break;
           default:
             console.log("Mensagem do servidor: ", payload);
             //store.commit('receiveData', payload);

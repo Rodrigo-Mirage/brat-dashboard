@@ -13,6 +13,9 @@ import Login from '@/pages/Login/Login';
 import UserView from '@/pages/UserView/UserView';
 import Signup from '@/pages/Signup/Signup';
 import RunSubmit from '@/pages/RunSubmit/RunSubmit';
+import Events from '@/pages/Events/Events';
+import Games from '@/pages/Games/Games';
+import Extras from '@/pages/Extras/Extras';
 import ErrorPage from '@/pages/Error/Error';
 
 Vue.use(Router);
@@ -84,6 +87,21 @@ export default new Router({
           path: 'submitrun',
           name: 'Submitrun',
           component: RunSubmit,
+        },
+        {
+          path: 'events',
+          name: 'Events',
+          component: Events,
+        },
+        {
+          path: 'games',
+          name: 'Games',
+          component: Games,
+        },
+        {
+          path: 'extras',
+          name: 'Extras',
+          component: Extras,
         },
       ],
     },
