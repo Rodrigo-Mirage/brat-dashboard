@@ -11,6 +11,7 @@ import store from './store';
 import router from './Routes';
 import App from './App';
 import layoutMixin from './mixins/layout';
+import vuetify from './plugins/vuetify';
 
 Vue.use(BootstrapVue);
 Vue.use(VCalendar, {
@@ -34,5 +35,6 @@ new Vue({
   el: '#app',
   store,
   router,
+  vuetify,
   render: h => h(App),
 });
