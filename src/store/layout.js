@@ -11,6 +11,7 @@ export default {
     authToken: null,
     authenticate: null,
     userList: [],
+    gamesList: [],
 
     id:'',
     first_name: '',
@@ -68,10 +69,11 @@ export default {
       }
       */
     },
-    SOCKET_SEND(message){
-      console.log('message sent: ' + message);
+    listGames(state, payload){
+      state.gamesList = payload[0];
     },
-    incrementReq(state){
+    SOCKET_SEND(state, message){
+      console.log('message sent: ' + message);
       state.curReq++;
     },
     logout(state){

@@ -10,6 +10,9 @@ export default function websocket(){
           case "getUsers":
             store.commit('layout/listUsers', payload.data);
             break;
+          case "getGames":
+            store.commit('layout/listGames', payload.data);
+            break;
           default:
             console.log("Mensagem do servidor: ", payload);
             //store.commit('receiveData', payload);

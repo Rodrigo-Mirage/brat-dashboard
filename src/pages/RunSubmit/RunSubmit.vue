@@ -151,7 +151,8 @@ export default {
         timeSlot: 'Manhã',
         platform: 'PS4',
 
-        gameName: 'Jogo',
+        gameId: null,
+        gameName: 'Jogo2',
         gameYear: '2000'
       },
       items: [
@@ -166,6 +167,7 @@ export default {
         timeSlot: null,
         platform: null,
 
+        gameId: null,
         gameName: null,
         gameYear: null
       }
@@ -179,45 +181,44 @@ export default {
         if(formatTime[0]) estimatedSeconds += Number(formatTime[0]) * 3600;
         if(formatTime[1]) estimatedSeconds += Number(formatTime[1]) * 60;
         if(formatTime[2]) estimatedSeconds += Number(formatTime[2]);
-        
-        const wsPayload = {"endpoint":"submitRun", "id":this.curReq, "info":{
-          "gameName": this.form.gameName, 
-          "gameYear": this.form.gameYear, 
-          "category": this.form.category, 
-          "estimated_time": estimatedSeconds, 
-          "preferred_time_slot": this.form.timeSlot
+
+        for(let game in this.gamesList){
+          if(this.form.gameName === this.gamesList[game].name){
+            this.form.gameYear = this.gamesList[game].year;
+            this.form.gameId = this.gamesList[game].id;
+            continue;
           }
-        };
-        this.$store.commit('layout/incrementReq');
-        await this.$store.commit('layout/SOCKET_SEND', wsPayload);
-      }
-      /*
-      if(this.inputValidation()){
-        const response = await RunService.postSignup(
-                  this.form.first_name,
-                  this.form.last_name,
-                  this.form.username,
-                  this.form.nickname,
-                  this.form.email,
-                  this.form.password1,
-                  this.form.gender,
-                  this.form.birthday,
-                  this.form.phone_number,
-                  this.form.stream_link,
-                  this.form.twitch,
-                  this.form.twitter,
-                  this.form.facebook,
-                  this.form.instagram,
-                  this.form.youtube);
-        console.log(response);
-        
-        if (response) {
-          this.$router.push('/login');
-        }else{
-          this.errorMessage = "Usuário já existe"
         }
+        
+        let wsPayload = null;
+        if(this.form.gameId !== null){
+          wsPayload = {"endpoint":"createRun", "id":this.curReq, "info":{
+            "runner_id": this.userId,
+
+            "game_id": this.form.gameId,
+            "category": this.form.category, 
+            "estimated_time": estimatedSeconds, 
+            "preferred_time_slot": this.form.timeSlot,
+            "platform": this.form.platform
+            }
+          };
+        }else{
+          wsPayload = {"endpoint":"createRunNGame", "id":this.curReq, "info":{
+            "runner_id": this.userId,
+
+            "category": this.form.category, 
+            "estimated_time": estimatedSeconds, 
+            "preferred_time_slot": this.form.timeSlot,
+            "platform": this.form.platform,
+
+            "name": this.form.gameName,
+            "year":this.form.gameYear,
+            }
+          };
+        }        
+        await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+        this.form.gameId = null;
       }
-      */
     },
     inputValidation(){
       let validationCheck = true;
@@ -251,15 +252,20 @@ export default {
           if(this.errors[error]) this.errorMessage = this.errorMessage + this.errors[error];
         }
       }
-
       return validationCheck;
     }
   },
   computed:{
     ...mapState('layout', {
       curReq: state => state.curReq,
+      gamesList: state => state.gamesList,
+      userId: state => state.id,
     }),
   },
+  async created(){
+    const wsPayload = {"endpoint":"getGames", "id":this.curReq, "info":{}};
+    await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+  }
 };
 </script>
 

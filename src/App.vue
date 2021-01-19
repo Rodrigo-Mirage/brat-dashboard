@@ -17,7 +17,6 @@ export default {
     if (window.localStorage.getItem('authenticated') === 'true' && window.localStorage.getItem('curUser')) {
       await this.saveUser(window.localStorage.getItem('curUser'));
       const wsPayload = {"endpoint":"login", "id":this.curReq, "info":{"token": window.localStorage.getItem('token')}};
-      this.$store.commit('layout/incrementReq');
       await this.$store.commit('layout/SOCKET_SEND', wsPayload);
     }
 

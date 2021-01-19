@@ -108,7 +108,6 @@ export default {
 
         //WS Login
         const wsPayload = {"endpoint":"login", "id":this.curReq, "info":{"token": this.authToken}};
-        this.$store.commit('layout/incrementReq');
         await this.$store.commit('layout/SOCKET_SEND', wsPayload);
         
         if(this.authenticate === null || this.authenticate === undefined){

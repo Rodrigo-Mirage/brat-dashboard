@@ -86,13 +86,11 @@ export default {
     async removePermission(permission){
       const wsPayload = {"endpoint":"removePermission", "id":this.curReq, "info":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": permission}};
       await this.$store.commit('layout/SOCKET_SEND', wsPayload);
-      this.$store.commit('layout/incrementReq');
       console.log("permissão removida: " + permission);
     },
     async addPermission(){
       const wsPayload = {"endpoint":"addPermission", "id":this.curReq, "info":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": this.selectedPermission}};
       await this.$store.commit('layout/SOCKET_SEND', wsPayload);
-      this.$store.commit('layout/incrementReq');
     }
   }
 };
