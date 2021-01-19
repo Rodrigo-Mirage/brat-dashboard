@@ -103,7 +103,7 @@
                      required
                      placeholder=""/>
             </b-input-group>
-            <small>Informar o intervalo de tempo preferido para realização da run (manhã, tarde ou noite).</small>
+            <small>Informar o intervalo de tempo preferido para realização da run (manhã, tarde, noite ou madrugada).</small>
             </b-col>
           </b-form-group>
 

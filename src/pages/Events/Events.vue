@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="page-title">Admin Page &nbsp;
+    <h1 class="page-title">Events Page &nbsp;
       <small>
         <small>Template</small>
       </small>
@@ -8,8 +8,8 @@
     <b-row>
       <b-col>
         <Widget
-          title="<h5>Permissions <span class='fw-semi-bold'>Table</span></h5>"
-          customHeader settings close
+          title="<h5>Events <span class='fw-semi-bold'>Table</span></h5>"
+          customHeader
         >
           <div class="table-resposive">
             <table class="table">

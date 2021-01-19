@@ -9,7 +9,7 @@
       <b-col>
         <Widget
           title="<h5>Extras <span class='fw-semi-bold'>Table</span></h5>"
-          customHeader settings close
+          customHeader
         >
           <div class="table-resposive">
             <table class="table">
