@@ -13,16 +13,35 @@
             {{errorMessage}}
           </b-alert>
 
-<!--
-          <v-autocomplete
-            v-model="form.gameName"
-            :items="items"
-            dense
-            solo
-            label="Nome do jogo"
-          ></v-autocomplete>
--->
+          <b-form-group label-cols="1" label="Nome do jogo" label-for="gameName">
+            <b-col cols="5">
+            <div class="autocomplete" >
+              <b-input-group>
+              <input 
+                  type="text" 
+                  v-model="search"
+                  @input="onChange"
+                  @keydown.down="onArrowDown"
+                  @keydown.up="onArrowUp"
+                  @keydown.enter="onEnter"
+                  class="form-control input-transparent pl-3"/>
+              </b-input-group>
+              <ul class="autocomplete-results" v-show="isOpen">
+                <li 
+                  class="autocomplete-result" 
+                  v-for="(result, i) in results" 
+                  :key="i" 
+                  @click="setResult(result)"
+                  :class="{ 'is-active': i === arrowCounter }">
+                  {{ result }}
+                </li>
+              </ul>
+            </div>
+            </b-col>
+          </b-form-group>
 
+
+<!--
           <b-form-group label-cols="1" label="Nome do jogo" label-for="gameName">
             <b-col cols="5">
             <b-input-group>
@@ -37,7 +56,7 @@
             <small>Informar o nome completo do jogo.</small>
             </b-col>
           </b-form-group>
-
+-->
           <b-form-group label-cols="1" label="Ano de Lançamento" label-for="gameYear">
             <b-col cols="5">
             <b-input-group>
@@ -145,6 +164,13 @@ export default {
   data() {
     return {
       errorMessage: null,
+
+      search: '',
+      items: [],
+      isOpen: false,
+      results: [],
+      arrowCounter: -1,
+
       form: {
         category: 'Any%',
         estimatedTime: '01:00:00',
@@ -155,12 +181,6 @@ export default {
         gameName: 'Jogo2',
         gameYear: '2000'
       },
-      items: [
-        'aaaa',
-        'bbbb',
-        'cccc',
-        'dddd',
-      ],
       errors: {
         category: null,
         estimatedTime: null,
@@ -174,6 +194,41 @@ export default {
     }
   },
   methods: {
+    
+    handleClickOutside(evt) {
+      if (!this.$el.contains(evt.target)) {
+        this.isOpen = false;
+        this.arrowCounter = -1;
+      }
+    },
+    onArrowDown() {
+      if (this.arrowCounter < this.results.length) {
+        this.arrowCounter = this.arrowCounter + 1;
+      }
+    },
+    onArrowUp() {
+      if (this.arrowCounter > 0) {
+        this.arrowCounter = this.arrowCounter - 1;
+      }
+    },
+    onEnter() {
+      this.search = this.results[this.arrowCounter];
+      this.isOpen = false;
+      this.arrowCounter = -1;
+    },
+    onChange() {
+      this.isOpen = true;
+      this.filterResults();
+    },
+    filterResults() {
+      this.results = this.items.filter(item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
+      if(this.results.length === 0 || this.search === ''){ this.isOpen = false}
+    },
+    setResult(result) {
+        this.search = result;
+        this.isOpen = false;
+    },
+
     async submit() {
       if(this.inputValidation()){
         let formatTime = this.form.estimatedTime.split(':');
@@ -265,7 +320,49 @@ export default {
   async created(){
     const wsPayload = {"endpoint":"getGames", "id":this.curReq, "info":{}};
     await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+    for(let game in this.gamesList){
+      this.items.push(this.gamesList[game].name);
+    }
+    console.log(this.gamesList);
+  },
+  mounted(){
+    document.addEventListener('click', this.handleClickOutside);
+  },
+  destroyed() {
+    document.removeEventListener('click', this.handleClickOutside);
   }
 };
 </script>
 
+<style>
+  .autocomplete {
+    position: relative;
+  }
+
+  .autocomplete-results {
+    padding: 0;
+    margin: 0;
+    border: 2px solid #15172e;
+    border-radius: 2%;
+    height: 120px;
+    overflow: hidden;
+  }
+
+  .autocomplete-result {
+    list-style: none;
+    text-align: left;
+    padding: 4px 2px;
+    cursor: pointer;
+  }
+
+  .autocomplete-result:hover {
+    background-color: #15172e;
+    color: white;
+  }
+
+  .autocomplete-result.is-active,
+  .autocomplete-result:hover {
+    background-color: #15172e;
+    color: white;
+  }
+</style>
