@@ -18,6 +18,8 @@ import Games from '@/pages/Games/Games';
 import Extras from '@/pages/Extras/Extras';
 import ErrorPage from '@/pages/Error/Error';
 
+import store from './store/layout'
+
 Vue.use(Router);
 
 const router = new Router({
@@ -42,6 +44,9 @@ const router = new Router({
       path: '/app',
       name: 'Layout',
       component: Layout,
+      meta:{
+        requiresAuth: true,
+      },
       children: [
         {
           path: 'dashboard',
@@ -114,7 +119,11 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  next();
+  const authenticated =  store.state.authenticate;
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  if(requiresAuth && !authenticated) next('login');
+  else if(!requiresAuth && authenticated) next('app/dashboard');
+  else next();
 })
 
 export default router;

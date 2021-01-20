@@ -391,10 +391,5 @@ export default {
       return validationCheck;
     }
   },
-  created() {
-    if (window.localStorage.getItem('authenticated') === 'true') {
-      this.$router.push('/app/dashboard');
-    }
-  },
 };
 </script>

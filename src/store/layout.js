@@ -9,7 +9,7 @@ export default {
     sidebarActiveElement: null,
     curReq: 1,
     authToken: null,
-    authenticate: null,
+    authenticate: false,
     userList: [],
     gamesList: [],
     eventsList: [],
@@ -143,4 +143,9 @@ export default {
       commit('logout');
     }
   },
+  getters:{
+    authenticate: state => {
+      return state.authenticate;
+    }
+  }
 };

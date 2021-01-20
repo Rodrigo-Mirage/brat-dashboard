@@ -165,14 +165,14 @@ export default {
       arrowCounter: -1,
 
       form: {
-        category: 'Any%',
-        estimatedTime: '01:00:00',
-        timeSlot: 'Manhã',
-        platform: 'PS4',
+        category: '',
+        estimatedTime: '',
+        timeSlot: '',
+        platform: '',
 
         gameId: null,
         gameName: '',
-        gameYear: '2000'
+        gameYear: ''
       },
       errors: {
         category: null,
@@ -194,12 +194,14 @@ export default {
         this.arrowCounter = -1;
       }
     },
+    /*
     handleFocus(evt){
       if(evt.path[0].id === "gameName"){
         this.isOpen = false;
         this.arrowCounter = -1;
       }
     },
+    */
     onArrowDown() {
       if (this.arrowCounter < this.results.length) {
         this.arrowCounter = this.arrowCounter + 1;
@@ -218,6 +220,12 @@ export default {
     onChange() {
       this.isOpen = true;
       this.filterResults();
+      for(let game in this.gamesList){
+        if(this.gamesList[game].name === this.form.gameName){
+          this.form.gameYear = this.gamesList[game].year;
+          continue;
+        }
+      }
     },
     filterResults() {
       this.results = this.items.filter(item => item.toLowerCase().indexOf(this.form.gameName.toLowerCase()) > -1);
@@ -325,11 +333,11 @@ export default {
   },
   mounted(){
     document.addEventListener('click', this.handleClickOutside);
-    document.addEventListener('focusout', this.handleFocus);
+    //document.addEventListener('focusout', this.handleFocus);
   },
   destroyed() {
     document.removeEventListener('click', this.handleClickOutside);
-    document.removeEventListener('focusout', this.handleFocus);
+    //document.removeEventListener('focusout', this.handleFocus);
   }
 };
 </script>

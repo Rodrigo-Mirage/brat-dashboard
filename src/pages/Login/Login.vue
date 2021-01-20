@@ -125,10 +125,5 @@ export default {
       curReq: state => state.curReq,
     }),
   },
-  created() {
-    if (window.localStorage.getItem('authenticated') === 'true') {
-      this.$router.push('/app/dashboard');
-    }
-  },
 };
 </script>
