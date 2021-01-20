@@ -143,9 +143,4 @@ export default {
       commit('logout');
     }
   },
-  getters:{
-    authenticate: state => {
-      return state.authenticate;
-    }
-  }
 };

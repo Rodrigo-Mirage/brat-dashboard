@@ -76,6 +76,8 @@ export default {
         }
         resp += " ";
       }
+      //console.log("teste: ", moment.utc(time*1000).format('HH[ horas] mm[ minutos] ss [ segundos]'));
+      //console.log('test: ', moment.duration(time, 'seconds').humanize());
       return resp;
     }
   },

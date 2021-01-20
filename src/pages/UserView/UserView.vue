@@ -89,8 +89,10 @@ export default {
       console.log("permissão removida: " + permission);
     },
     async addPermission(){
-      const wsPayload = {"endpoint":"addPermission", "id":this.curReq, "info":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": this.selectedPermission}};
-      await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+      if(this.selectedPermission !== ''){
+        const wsPayload = {"endpoint":"addPermission", "id":this.curReq, "info":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": this.selectedPermission}};
+        await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+      }
     }
   }
 };

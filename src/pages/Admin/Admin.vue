@@ -9,7 +9,7 @@
       <b-col>
         <Widget
           title="<h5>Permissions <span class='fw-semi-bold'>Table</span></h5>"
-          customHeader settings close
+          customHeader
         >
           <div class="table-resposive">
             <table class="table">
@@ -46,18 +46,6 @@
                 </tr>
               </tbody>
             </table>
-          </div>
-          <div class="clearfix">
-            <div class="float-right">
-              <b-button variant="default" class="mr-3" size="sm">Send to...</b-button>
-              <b-dropdown variant="inverse" class="mr-xs" size="sm" text="Clear" right>
-                <b-dropdown-item>Clear</b-dropdown-item>
-                <b-dropdown-item>Move ...</b-dropdown-item>
-                <b-dropdown-item>Something else here</b-dropdown-item>
-                <b-dropdown-divider />
-                <b-dropdown-item>Separated link</b-dropdown-item>
-              </b-dropdown>
-            </div>
           </div>
         </Widget>
       </b-col>
