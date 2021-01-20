@@ -28,6 +28,7 @@ export default {
     facebook: '',
     instagram: '',
     youtube: '',
+    permissions: ['admin'],
   },
 
   mutations: {
@@ -44,7 +45,7 @@ export default {
     authLogin(state, token){
       state.authToken = token;
     },
-    saveUser(state, {id, first_name, last_name, username, email, gender, phone_number, stream_link, twitch, twitter, facebook, instagram, youtube}){
+    loadUser(state, {id, first_name, last_name, username, email, gender, phone_number, stream_link, twitch, twitter, facebook, instagram, youtube, permissions}){
       state.id = id;
       state.first_name = first_name;
       state.last_name = last_name;
@@ -58,6 +59,7 @@ export default {
       state.facebook = facebook;
       state.instagram = instagram;
       state.youtube = youtube;
+      state.permissions = permissions;
     },
     authenticate(state){
       state.authenticate = true;
@@ -100,6 +102,7 @@ export default {
       state.facebook = '';
       state.instagram = '';
       state.youtube = '';
+      state.permissions = [];
       router.push('/login');
     }
   },
@@ -118,25 +121,29 @@ export default {
         window.localStorage.setItem('curUser', response.data.id);
         window.localStorage.setItem('token', token);
         commit('authLogin', token);
-        await dispatch('saveUser', response.data.id);
+        await dispatch('loadUser', response.data.id);
       }
     },
-    async saveUser({ commit }, id){
+    async loadUser({ commit }, id){
       const user = await UserService.getUser(id);
-      commit('saveUser', {
+      //const wsPayload = {"endpoint":"getUser", "id":state.curReq, "info":{"id": id}};
+      //commit('SOCKET_SEND', wsPayload);
+      console.log(user.data.res[0][0]);
+      commit('loadUser', {
         id: id,
-        first_name: user.data.res.first_name,
-        last_name: user.data.res.last_name,
-        username: user.data.res.username,
-        email: user.data.res.email,
-        gender: user.data.res.gender,
-        phone_number: user.data.res.phone_number,
-        stream_link: user.data.res.stream_link,
-        twitch: user.data.res.twitch,
-        twitter: user.data.res.twitter,
-        facebook: user.data.res.facebook,
-        instagram: user.data.res.instagram,
-        youtube: user.data.res.youtube,
+        first_name: user.data.res[0][0].first_name,
+        last_name: user.data.res[0][0].last_name,
+        username: user.data.res[0][0].username,
+        email: user.data.res[0][0].email,
+        gender: user.data.res[0][0].gender,
+        phone_number: user.data.res[0][0].phone_number,
+        stream_link: user.data.res[0][0].stream_link,
+        twitch: user.data.res[0][0].twitch,
+        twitter: user.data.res[0][0].twitter,
+        facebook: user.data.res[0][0].facebook,
+        instagram: user.data.res[0][0].instagram,
+        youtube: user.data.res[0][0].youtube,
+        permissions: user.data.res[0][0].permissions,
       })
     },
     logoutAction({ commit }){

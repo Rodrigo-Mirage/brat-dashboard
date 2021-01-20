@@ -78,7 +78,7 @@ export default {
   data() {
     return {
       form:{
-        username: 'vitorch',
+        username: 'admin',
         password: '12345678',
       },
       errorMessage: null,

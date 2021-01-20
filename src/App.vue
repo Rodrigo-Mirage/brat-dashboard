@@ -8,14 +8,14 @@ export default {
   name: 'App',
   methods:{
     ...mapActions(
-      'layout', ['saveUser'],
+      'layout', ['loadUser'],
     ),
   },
   async created() {
     const currentPath = this.$router.history.current.path;
 
     if (window.localStorage.getItem('authenticated') === 'true' && window.localStorage.getItem('curUser')) {
-      await this.saveUser(window.localStorage.getItem('curUser'));
+      await this.loadUser(window.localStorage.getItem('curUser'));
       const wsPayload = {"endpoint":"login", "id":this.curReq, "info":{"token": window.localStorage.getItem('token')}};
       await this.$store.commit('layout/SOCKET_SEND', wsPayload);
     }

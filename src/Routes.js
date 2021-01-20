@@ -2,11 +2,6 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import Layout from '@/components/Layout/Layout';
-import Typography from '@/pages/Typography/Typography';
-import Tables from '@/pages/Tables/Tables';
-import Notifications from '@/pages/Notifications/Notifications';
-import Icons from '@/pages/Icons/Icons';
-import Charts from '@/pages/Charts/Charts';
 import Dashboard from '@/pages/Visits/Visits';
 import Admin from '@/pages/Admin/Admin';
 import Login from '@/pages/Login/Login';
@@ -54,39 +49,20 @@ const router = new Router({
           component: Dashboard,
         },
         {
-          path: 'typography',
-          name: 'Typography',
-          component: Typography,
-        },
-        {
-          path: 'tables',
-          name: 'Tables',
-          component: Tables,
-        },
-        {
-          path: 'notifications',
-          name: 'Notifications',
-          component: Notifications,
-        },
-        {
-          path: 'components/icons',
-          name: 'Icons',
-          component: Icons,
-        },
-        {
-          path: 'components/charts',
-          name: 'Charts',
-          component: Charts,
-        },
-        {
           path: 'admin',
           name: 'Admin',
           component: Admin,
+          meta:{
+            permission: 'Admin',
+          }
         },
         {
           path: 'user/:id',
           name: 'UserView',
           component: UserView,
+          meta:{
+            permission: 'Admin',
+          }
         },
         {
           path: 'submitrun',
@@ -97,16 +73,25 @@ const router = new Router({
           path: 'events',
           name: 'Events',
           component: Events,
+          meta:{
+            permission: 'Admin',
+          }
         },
         {
           path: 'games',
           name: 'Games',
           component: Games,
+          meta:{
+            permission: 'Admin',
+          }
         },
         {
           path: 'extras',
           name: 'Extras',
           component: Extras,
+          meta:{
+            permission: 'Admin',
+          }
         },
       ],
     },
@@ -121,8 +106,20 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   const authenticated =  store.state.authenticate;
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  if(requiresAuth && !authenticated) next('login');
-  else if(!requiresAuth && authenticated) next('app/dashboard');
+  const requiredPermission = to.meta.permission;
+
+  if(requiresAuth && !authenticated) next('Login');
+
+  else if(!requiresAuth && authenticated) next('Dashboard');
+
+  else if(requiredPermission){
+    if(store.state.permissions.includes(requiredPermission)){
+      next();
+    }else{
+      //console.log('você não tem a permissão necessária');
+      next('dashboard');
+    }
+  }
   else next();
 })
 
