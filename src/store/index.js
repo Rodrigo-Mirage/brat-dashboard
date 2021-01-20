@@ -6,12 +6,12 @@ import layout from './layout';
 
 Vue.use(Vuex);
 
-const ws = websocket();
+let ws = websocket();
 export default new Vuex.Store({
   modules: {
     layout,
   },
   plugins:[
     ws,
-  ]
+  ],
 });

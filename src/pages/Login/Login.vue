@@ -70,6 +70,7 @@
 import Widget from '@/components/Widget/Widget';
 //import AuthService from '@/service/AuthService'
 import { mapActions, mapState } from 'vuex';
+//import store from '../../store'
 
 export default {
   name: 'LoginPage',
@@ -107,6 +108,7 @@ export default {
         await this.$store.dispatch('layout/authLogin', payload);
 
         //WS Login
+        //this.$store.dispatch('createWS');
         const wsPayload = {"endpoint":"login", "id":this.curReq, "info":{"token": this.authToken}};
         await this.$store.commit('layout/SOCKET_SEND', wsPayload);
         

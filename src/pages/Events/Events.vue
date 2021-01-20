@@ -18,6 +18,7 @@
                   <th class="hidden-sm-down">#id</th>
                   <th>Name</th>
                   <th>Link para doação</th>
+                  <th>Data</th>
                   <th>Ativo</th>
                 </tr>
               </thead>
@@ -26,6 +27,7 @@
                   <td>{{row.id}}</td>
                   <td>{{row.name}}</td>
                   <td>{{row.donation_link}}</td>
+                  <td>{{formatDate(row.date)}}</td>
                   <td>{{row.active ? "Sim" : "Não"}}</td>
                 </tr>
               </tbody>
@@ -40,6 +42,7 @@
 <script>
 import Widget from '@/components/Widget/Widget';
 import { mapState } from 'vuex';
+const moment = require('moment');
 export default {
   name: 'Events',
   data() {
@@ -47,7 +50,10 @@ export default {
     }
   },
   methods: {
-
+    formatDate(date){
+      moment.locale(navigator.language)
+      return moment(date, "YYYY-MM-DD").format('DD MMMM YYYY');
+    }
   },
   computed: {
     ...mapState('layout', {
@@ -61,6 +67,7 @@ export default {
   async created(){
     const wsPayload = {"endpoint":"getEvents", "id":this.curReq};
     await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+    console.log(this.eventsList);
   },
 };
 </script>
