@@ -1,154 +1,148 @@
 <template>
   <div>
-    <h1 class="page-title">Submit your run! &nbsp;
+    <h1 class="page-title">Envie suas runs! &nbsp;
     </h1>
     <b-row>
       <b-col>
         <Widget
-          title="<h5>Crie <span class='fw-semi-bold'>sua run</span></h5>"
+          title="<h5>Crie <span class='fw-semi-bold'>uma run</span></h5>"
           customHeader
         >
-        <form novalidate class="mt" @submit.prevent="submit">
-          <b-alert class="alert-sm" variant="danger" :show="!!errorMessage">
-            {{errorMessage}}
-          </b-alert>
+          <form novalidate class="mt" @submit.prevent="submit">
+            <b-alert class="alert-sm" variant="danger" :show="!!errorMessage">
+              {{errorMessage}}
+            </b-alert>
 
-          <b-form-group label-cols="1" label="Nome do jogo" label-for="gameName">
-            <b-col cols="5">
-            <div class="autocomplete" >
-              <b-input-group>
-              <input 
-                  type="text" 
-                  v-model="search"
-                  @input="onChange"
-                  @keydown.down="onArrowDown"
-                  @keydown.up="onArrowUp"
-                  @keydown.enter="onEnter"
-                  class="form-control input-transparent pl-3"/>
-              </b-input-group>
-              <ul class="autocomplete-results" v-show="isOpen">
-                <li 
-                  class="autocomplete-result" 
-                  v-for="(result, i) in results" 
-                  :key="i" 
-                  @click="setResult(result)"
-                  :class="{ 'is-active': i === arrowCounter }">
-                  {{ result }}
-                </li>
-              </ul>
-            </div>
-            </b-col>
-          </b-form-group>
+            <b-form-row>
+              <b-col cols="6">
+                <b-form-group label="Nome do jogo" label-for="gameName">
+                  <div class="autocomplete" >
+                    <b-input-group>
+                    <input id="gameName"
+                        autocomplete="off"
+                        type="text"
+                        ref="gameName"
+                        v-model="form.gameName"
+                        @input="onChange"
+                        @keydown.down="onArrowDown"
+                        @keydown.up="onArrowUp"
+                        @keydown.enter="onEnter"
+                        class="form-control input-transparent pl-3"/>
+                    </b-input-group>
+                    <ul class="autocomplete-results" v-show="isOpen">
+                      <li
+                        class="autocomplete-result" 
+                        v-for="(result, i) in results" 
+                        :key="i" 
+                        @click="setResult(result)"
+                        :class="{ 'is-active': i === arrowCounter }">
+                        {{ result }}
+                      </li>
+                    </ul>
+                  </div>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group label="Ano de Lançamento" label-for="gameYear">
+                  <b-input-group>
+                    <input id="gameYear"
+                          v-model="form.gameYear" 
+                          ref="gameYear"
+                          class="form-control input-transparent pl-3"
+                          type="text"
+                          required
+                          placeholder=""/>
+                  </b-input-group>
+                  <small>Informar o ano de lançamento do jogo.</small>
+                </b-form-group>
+              </b-col>
+            </b-form-row>
+
+            <b-form-row>
+              <b-col cols="6">
+                <b-form-group label="Categoria" label-for="category">
+                  <b-input-group>
+                    <input id="category"
+                          v-model="form.category" 
+                          ref="category"
+                          class="form-control input-transparent pl-3"
+                          type="text"
+                          required
+                          placeholder=""/>
+                  </b-input-group>
+                  <small>Indique a categoria que você pode fazer (ex: 100%, Any%).</small>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group label="Tempo Estimado" label-for="estimatedTime">
+                  <b-input-group>
+                    <input id="estimatedTime"
+                          v-model="form.estimatedTime" 
+                          ref="estimatedTime"
+                          class="form-control input-transparent pl-3"
+                          type="time"
+                          required
+                          placeholder="Tempo estimado"
+                          step='1'
+                          min="00:00:00" max="24:00:00"
+                          />
+                  </b-input-group>
+                  <small>
+                    Coloque o tempo limite que será necessário para completar a categoria (hh:mm:ss). 
+                    Lembre que Personal Best é diferente de Tempo Estimado. 
+                    Leve em consideração no tempo estratégias seguras e tempo necessário para backups. 
+                    É muito importante conseguir terminar a run no evento.
+                  </small>
+                </b-form-group>
+              </b-col>
+            </b-form-row>
 
 
-<!--
-          <b-form-group label-cols="1" label="Nome do jogo" label-for="gameName">
-            <b-col cols="5">
-            <b-input-group>
-              <input id="gameName"
-                    v-model="form.gameName" 
-                    ref="gameName"
-                    class="form-control input-transparent pl-3"
-                    type="text"
-                    required
-                    placeholder=""/>
-            </b-input-group>
-            <small>Informar o nome completo do jogo.</small>
-            </b-col>
-          </b-form-group>
--->
-          <b-form-group label-cols="1" label="Ano de Lançamento" label-for="gameYear">
-            <b-col cols="5">
-            <b-input-group>
-              <input id="gameYear"
-                    v-model="form.gameYear" 
-                    ref="gameYear"
-                    class="form-control input-transparent pl-3"
-                    type="text"
-                    required
-                    placeholder=""/>
-            </b-input-group>
-            <small>Informar o ano de lançamento do jogo.</small>
-            </b-col>
+            <b-form-row>
+              <b-col cols="6">
+                <b-form-group label="Intervalo" label-for="timeSlot">
+                  <b-input-group>
+                    <input id="timeSlot"
+                          v-model="form.timeSlot" 
+                          ref="timeSlot"
+                          class="form-control input-transparent pl-3"
+                          type="text"
+                          required
+                          placeholder=""/>
+                  </b-input-group>
+                  <small>Informar o intervalo de tempo preferido para realização da run (manhã, tarde, noite ou madrugada).</small>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group label="Plataforma" label-for="platform">
+                  <b-input-group>
+                    <input id="platform"
+                          v-model="form.platform" 
+                          ref="platform"
+                          class="form-control input-transparent pl-3"
+                          type="text"
+                          required
+                          placeholder=""/>
+                  </b-input-group>
+                <small>Informar a plataforma que você usará para jogar o jogo(como PS4, PC, Switch).</small>
+                </b-form-group>
+              </b-col>
+            </b-form-row>
 
-          </b-form-group>
+            <b-form-row>
+              <small>*Não encontrou seu jogo na lista? Nos informe seu nome e ano de lançamento para adicionarmos!</small>
+            </b-form-row>
+            
+            <b-form-row>
+              <b-button type="submit" variant="danger" class="auth-btn" size="sm">
+                <span class="auth-btn-circle">
+                  <i class="la la-caret-right"></i>
+                </span>
+                Enviar
+              </b-button>
+            </b-form-row>
 
-          <b-form-group label-cols="1" label="Categoria" label-for="category">
-            <b-col cols="5">
-            <b-input-group>
-              <input id="category"
-                     v-model="form.category" 
-                     ref="category"
-                     class="form-control input-transparent pl-3"
-                     type="text"
-                     required
-                     placeholder=""/>
-            </b-input-group>
-            <small>Indique a categoria que você pode fazer (ex: 100%, Any%).</small>
-            </b-col>
-          </b-form-group>
-
-          <b-form-group label-cols="1" label="Tempo Estimado" label-for="estimatedTime">
-            <b-col cols="5">
-            <b-input-group>
-              <input id="estimatedTime"
-                     v-model="form.estimatedTime" 
-                     ref="estimatedTime"
-                     class="form-control input-transparent pl-3"
-                     type="time"
-                     required
-                     placeholder="Tempo estimado"
-                     step='1'
-                     min="00:00:00" max="24:00:00"
-                     />
-            </b-input-group>
-            <small>
-              Coloque o tempo limite que será necessário para completar a categoria (hh:mm:ss). 
-              Lembre que Personal Best é diferente de Tempo Estimado. 
-              Leve em consideração no tempo estratégias seguras e tempo necessário para backups. 
-              É muito importante conseguir terminar a run no evento.
-            </small>
-            </b-col>
-          </b-form-group>
-
-          <b-form-group label-cols="1" label="Intervalo" label-for="timeSlot">
-            <b-col cols="5">
-            <b-input-group>
-              <input id="timeSlot"
-                     v-model="form.timeSlot" 
-                     ref="timeSlot"
-                     class="form-control input-transparent pl-3"
-                     type="text"
-                     required
-                     placeholder=""/>
-            </b-input-group>
-            <small>Informar o intervalo de tempo preferido para realização da run (manhã, tarde, noite ou madrugada).</small>
-            </b-col>
-          </b-form-group>
-
-          <b-form-group label-cols="1" label="Plataforma" label-for="platform">
-            <b-col cols="5">
-            <b-input-group>
-              <input id="platform"
-                     v-model="form.platform" 
-                     ref="platform"
-                     class="form-control input-transparent pl-3"
-                     type="text"
-                     required
-                     placeholder=""/>
-            </b-input-group>
-          <small>Informar a plataforma que você usará para jogar o jogo(como PS4, PC, Switch).</small>
-          </b-col>
-          </b-form-group>
-
-          <b-button type="submit" variant="danger" class="auth-btn" size="sm">
-            <span class="auth-btn-circle">
-              <i class="la la-caret-right"></i>
-            </span>
-            Enviar
-          </b-button>
-
-        </form>
+          </form>
         </Widget>
       </b-col>
     </b-row>
@@ -165,7 +159,6 @@ export default {
     return {
       errorMessage: null,
 
-      search: '',
       items: [],
       isOpen: false,
       results: [],
@@ -178,7 +171,7 @@ export default {
         platform: 'PS4',
 
         gameId: null,
-        gameName: 'Jogo2',
+        gameName: '',
         gameYear: '2000'
       },
       errors: {
@@ -194,9 +187,15 @@ export default {
     }
   },
   methods: {
-    
+    //automcompletemethods
     handleClickOutside(evt) {
-      if (!this.$el.contains(evt.target)) {
+      if(evt.target.id !== "gameName"){
+        this.isOpen = false;
+        this.arrowCounter = -1;
+      }
+    },
+    handleFocus(evt){
+      if(evt.path[0].id === "gameName"){
         this.isOpen = false;
         this.arrowCounter = -1;
       }
@@ -212,7 +211,7 @@ export default {
       }
     },
     onEnter() {
-      this.search = this.results[this.arrowCounter];
+      this.form.gameName = this.results[this.arrowCounter];
       this.isOpen = false;
       this.arrowCounter = -1;
     },
@@ -221,14 +220,14 @@ export default {
       this.filterResults();
     },
     filterResults() {
-      this.results = this.items.filter(item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
-      if(this.results.length === 0 || this.search === ''){ this.isOpen = false}
+      this.results = this.items.filter(item => item.toLowerCase().indexOf(this.form.gameName.toLowerCase()) > -1);
+      if(this.results.length === 0 || this.form.gameName === ''){ this.isOpen = false}
     },
     setResult(result) {
-        this.search = result;
+        this.form.gameName = result;
         this.isOpen = false;
     },
-
+    //submit request methods
     async submit() {
       if(this.inputValidation()){
         let formatTime = this.form.estimatedTime.split(':');
@@ -323,13 +322,14 @@ export default {
     for(let game in this.gamesList){
       this.items.push(this.gamesList[game].name);
     }
-    console.log(this.gamesList);
   },
   mounted(){
     document.addEventListener('click', this.handleClickOutside);
+    document.addEventListener('focusout', this.handleFocus);
   },
   destroyed() {
     document.removeEventListener('click', this.handleClickOutside);
+    document.removeEventListener('focusout', this.handleFocus);
   }
 };
 </script>
@@ -342,11 +342,25 @@ export default {
   .autocomplete-results {
     padding: 0;
     margin: 0;
-    border: 2px solid #15172e;
-    border-radius: 2%;
-    height: 120px;
+    margin-left: 0.5%;
+    border: 3px solid #15172e;
+    border-radius: 1%;
+    max-height: 130px;
+    width: 99%;
     overflow: hidden;
+    position: absolute;
+    background-color: #1b1c3a;
+    overflow-y: auto;
+    z-index: 10;
   }
+  
+  .autocomplete-results::-webkit-scrollbar {
+    display: none;
+  }
+  .autocomplete-results {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 
   .autocomplete-result {
     list-style: none;
