@@ -280,6 +280,7 @@ export default {
         }        
         await this.$store.commit('layout/SOCKET_SEND', wsPayload);
         this.form.gameId = null;
+        this.$router.push('/app/dashboard');
       }
     },
     inputValidation(){

@@ -1,14 +1,10 @@
 <template>
   <div>
-    <h1 class="page-title">Extras Page &nbsp;
-      <small>
-        <small>Template</small>
-      </small>
-    </h1>
+    <h1 class="page-title">Página de Extras &nbsp;</h1>
     <b-row>
       <b-col>
         <Widget
-          title="<h5>Extras <span class='fw-semi-bold'>Table</span></h5>"
+          title="<h5>Tabela de <span class='fw-semi-bold'>Extras</span></h5>"
           customHeader
         >
           <div class="table-resposive">
@@ -24,7 +20,7 @@
               <tbody>
                 <tr v-for="row in this.extrasList" :key="row.id">
                   <td>{{row.id}}</td>
-                  <td>{{row.event_id}}</td>
+                  <td>{{row.name}}</td>
                   <td>{{row.type}}</td>
                   <td>{{formatTime(row.time)}}</td>
                 </tr>

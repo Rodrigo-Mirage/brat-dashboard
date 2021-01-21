@@ -1,14 +1,10 @@
 <template>
   <div>
-    <h1 class="page-title">Games Page &nbsp;
-      <small>
-        <small>Template</small>
-      </small>
-    </h1>
+    <h1 class="page-title">Página de Jogos &nbsp;</h1>
     <b-row>
       <b-col>
         <Widget
-          title="<h5>Games <span class='fw-semi-bold'>Table</span></h5>"
+          title="<h5>Tabela de <span class='fw-semi-bold'>Jogos</span></h5>"
           customHeader
         >
           <div class="table-resposive">
@@ -18,7 +14,7 @@
                   <th class="hidden-sm-down">#id</th>
                   <th>Nome</th>
                   <th>Ano de lançamento</th>
-                  <th>Editar</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -58,8 +54,8 @@ export default {
   },
   methods: {
     async edit(id, name, year){
-          const wsPayload = {"endpoint":"updateGame", "id":this.curReq, info:{"id":id, "name":name, "year":year}};
-          await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+      const wsPayload = {"endpoint":"updateGame", "id":this.curReq, info:{"id":id, "name":name, "year":year}};
+      await this.$store.commit('layout/SOCKET_SEND', wsPayload);
     }
   },
   computed: {

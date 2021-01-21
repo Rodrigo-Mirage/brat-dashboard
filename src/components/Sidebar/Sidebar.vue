@@ -15,17 +15,9 @@
         index="dashboard"
         isHeader
       />
-      <NavLink
-        :activeItem="activeItem"
-        header="Submit a Run"
-        link="/app/submitrun"
-        iconName="flaticon-home"
-        index="submitrun"
-        isHeader
-      />
       <NavLink v-if="this.permissions.includes('Admin')"
         :activeItem="activeItem"
-        header="Admin"
+        header="Usuários"
         link="/app/admin"
         iconName="flaticon-home"
         index="admin"
@@ -33,7 +25,7 @@
       />
       <NavLink v-if="this.permissions.includes('Admin')"
         :activeItem="activeItem"
-        header="Events"
+        header="Eventos"
         link="/app/events"
         iconName="flaticon-home"
         index="events"
@@ -41,7 +33,7 @@
       />
       <NavLink v-if="this.permissions.includes('Admin')"
         :activeItem="activeItem"
-        header="Games"
+        header="Jogos"
         link="/app/games"
         iconName="flaticon-home"
         index="games"
@@ -53,6 +45,14 @@
         link="/app/extras"
         iconName="flaticon-home"
         index="extras"
+        isHeader
+      />
+      <NavLink
+        :activeItem="activeItem"
+        header="Criar uma run"
+        link="/app/submitrun"
+        iconName="flaticon-home"
+        index="submitrun"
         isHeader
       />
     </ul>

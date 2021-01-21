@@ -6,6 +6,41 @@
         <p v-else>User</p>
       </small>
     </h1>
+    <b-row v-if="this.permissions.includes('Admin')">
+      <b-col>
+        <Widget
+          title="<h5>Tabela de <span class='fw-semi-bold'>Eventos Ativos</span></h5>"
+          customHeader collapse
+        >
+          <div class="table-resposive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="hidden-sm-down">#id</th>
+                  <th>Nome</th>
+                  <th>Link para doação</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in this.eventsList" :key="row.id">
+                  <td v-if="row.active">{{row.id}}</td>
+                  <td v-if="row.active">{{row.name}}</td>
+                  <td v-if="row.active"><a href="`${row.donation_link}`">{{row.donation_link}}</a></td>
+                  <td v-if="row.active">{{formatDate(row.date)}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="clearfix">
+            <div class="float-right">
+              <router-link :to="`/app/events`"><b-button variant="dark">Gerenciar eventos</b-button></router-link>
+            </div>
+          </div>
+        </Widget>
+      </b-col>
+    </b-row>
+
     <b-row>
       <b-col>
         <Widget
@@ -13,7 +48,7 @@
           customHeader collapse
         >
           <div class="table-resposive">
-            <table class="table">
+            <table class="table" v-if="this.userRuns.length !== 0">
               <thead>
                 <tr>
                   <th>Evento</th>
@@ -31,16 +66,23 @@
                   <td>{{ row.category }}</td>
                   <td>{{ row.platform }}</td>
                   <td>{{ row.time_slot }}</td>
-
-                  <td v-if="row.waiting">Na Fila</td>
-                  <td v-else-if="row.reviewed">Revisado</td>
-                  <td v-else-if="row.approved">Aprovado</td>
-                  <!--<td v-else-if="(!row.approved && row.reviewed)">Recusado</td>-->
-                  <td v-else>None</td>
-
+                  <td>
+                    <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 0" variant='gray'> Não Revisada </b-badge>
+                    <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 1" variant='success'> Aprovada </b-badge>
+                    <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 2" variant='primary'> Aprovada, na fila de espera </b-badge>
+                    <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 3" variant='danger'> Recusada </b-badge>
+                  </td>
                 </tr>
               </tbody>
             </table>
+            <div v-else>
+                <span>Você ainda não possui runs!</span>
+            </div>
+            <div class="clearfix">
+              <div class="float-right">
+                <router-link :to="`/app/submitrun`"><b-button variant="dark">Criar nova run</b-button></router-link>
+              </div>
+            </div>
           </div>
         </Widget>
       </b-col>
@@ -51,15 +93,39 @@
 <script>
 import Widget from '@/components/Widget/Widget';
 import { mapState } from 'vuex';
+const moment = require('moment');
 export default {
   name: 'Visits',
   data() {
     return{
-      status: null,
     }
   },
   methods: {
-
+    getStatus(reviewed, approved, waiting){
+      // 0 = Não revisada
+      // 1 = Aprovada
+      // 2 = Aprovada, na fila de espera
+      // 3 = Recusada
+      let resp = 0;
+      if(reviewed){
+        if(approved){
+          resp = 1
+          if(waiting){
+            resp = 2
+          }
+        }else{
+          resp = 3
+        }
+      }
+      else{
+        resp = 0
+      }
+      return resp
+    },
+    formatDate(date){
+      moment.locale(navigator.language)
+      return moment(date, "YYYY-MM-DD").format('DD MMMM YYYY');
+    }
   },
   computed: {
     ...mapState('layout', {
@@ -67,10 +133,14 @@ export default {
       curReq: state => state.curReq,
       id: state => state.id,
       userRuns: state => state.userRuns,
+      eventsList: state => state.eventsList,
     }),
   },
   async created(){
-    const wsPayload = {"endpoint":"getUserRuns", "id":this.curReq, info:{"id": this.id}};
+    let wsPayload = {"endpoint":"getUserRuns", "id":this.curReq, info:{"id": this.id}};
+    await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+
+    wsPayload = {"endpoint":"getEvents", "id":this.curReq};
     await this.$store.commit('layout/SOCKET_SEND', wsPayload);
   },
   components:{

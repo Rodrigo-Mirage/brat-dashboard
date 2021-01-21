@@ -1,14 +1,10 @@
 <template>
   <div>
-    <h1 class="page-title">Admin Page &nbsp;
-      <small>
-        <small>Template</small>
-      </small>
-    </h1>
+    <h1 class="page-title">Página de Usuários &nbsp;</h1>
     <b-row>
       <b-col>
         <Widget
-          title="<h5>Permissions <span class='fw-semi-bold'>Table</span></h5>"
+          title="<h5>Tabela de <span class='fw-semi-bold'>Usuários</span></h5>"
           customHeader
         >
           <div class="table-resposive">
@@ -16,12 +12,12 @@
               <thead>
                 <tr>
                   <th class="hidden-sm-down">#id</th>
-                  <th>Name</th>
-                  <th>Last Name</th>
-                  <th>Username</th>
+                  <th>Nome</th>
+                  <th>Sobrenome</th>
+                  <th>Usuário</th>
                   <th>Email</th>
-                  <th>Permission</th>
-                  <th>Update</th>
+                  <th>Permissões</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -33,19 +29,21 @@
                   <td>{{row.email}}</td>
 
                   <td><small v-for="permission in row.permissions" :key="permission">
-                    <b-badge v-if="permission === 'Admin'" variant="success">{{permission}}</b-badge>
-                    <b-badge v-else-if="permission === 'Tech'" variant="primary">{{permission}}</b-badge>
-                    <b-badge v-else-if="permission === 'Financ'" variant="danger">{{permission}}</b-badge>
-                    <b-badge v-else-if="permission === 'Staff-Brat2021-Lead'" variant="warning">{{permission}}</b-badge>
-                    <b-badge v-else-if="permission === ''"></b-badge>
-                    <b-badge v-else variant="light">{{permission}}</b-badge>
+                    <b-badge class='tag' v-if="permission === 'Admin'" variant="success">{{permission}}</b-badge>
+                    <b-badge class='tag' v-else-if="permission === 'Tech'" variant="primary">{{permission}}</b-badge>
+                    <b-badge class='tag' v-else-if="permission === 'Financ'" variant="danger">{{permission}}</b-badge>
+                    <b-badge class='tag' v-else-if="permission === 'Staff-Brat2021-Lead'" variant="warning">{{permission}}</b-badge>
+                    <b-badge class='tag' v-else-if="permission === ''"></b-badge>
+                    <b-badge class='tag' v-else variant="light">{{permission}}</b-badge>
                   </small></td>
                   <td>
-                    <router-link :to="`/app/user/${row.id}`"><b-button variant="dark">View</b-button></router-link>
+                    <router-link :to="`/app/user/${row.id}`"><b-button variant="dark">Visualizar</b-button></router-link>
                   </td>
                 </tr>
               </tbody>
             </table>
+          
+          
           </div>
         </Widget>
       </b-col>
@@ -81,3 +79,8 @@ export default {
 };
 </script>
 
+<style>
+  .tag{
+    margin-right: 5px
+  }
+</style>
