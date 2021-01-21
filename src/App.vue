@@ -1,5 +1,10 @@
 <template>
+<div>
   <router-view />
+  <b-modal id='server-modal' title="Servidor de websocket desconectado">
+    <p class="my-4">Servidor de websocket desconectado, por favor, recarregar a página.</p>
+  </b-modal>
+</div>
 </template>
 
 <script>
@@ -11,8 +16,17 @@ export default {
       'layout', ['loadUser'],
     ),
   },
+  watch:{
+    wsState: function(){
+      if(this.wsState === 3){
+        this.$bvModal.show('server-modal');
+        this.$store.commit('layout/wsState', -1);
+      }
+    }
+  },
   async created() {
     const currentPath = this.$router.history.current.path;
+    console.log(this.wsState);
 
     if (window.localStorage.getItem('authenticated') === 'true' && window.localStorage.getItem('curUser')) {
       await this.loadUser(window.localStorage.getItem('curUser'));
@@ -26,7 +40,8 @@ export default {
   computed: {
     ...mapState('layout', {
       authToken: state => state.authToken,
-      curReq: state => state.curReq
+      curReq: state => state.curReq,
+      wsState: state => state.wsState,
     }),
   },
 };

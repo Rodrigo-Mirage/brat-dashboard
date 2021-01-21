@@ -7,14 +7,19 @@ export default {
   state: {
     sidebarClose: true,
     sidebarActiveElement: null,
+
     curReq: 1,
     authToken: null,
     authenticate: false,
+    wsState: 3,
+
+    //information arrays
     userList: [],
     gamesList: [],
     eventsList: [],
     extrasList: [],
 
+    //current user
     id:'',
     first_name: '',
     last_name: '',
@@ -103,8 +108,15 @@ export default {
       state.instagram = '';
       state.youtube = '';
       state.permissions = [];
+      state.userList = [];
+      state.gamesList = [];
+      state.eventsList = [];
+      state.extrasList = [];
       router.push('/login');
-    }
+    },
+    wsState(state, curState){
+      state.wsState = curState;
+    },
   },
   actions: {
     switchSidebar({ commit }, value) {

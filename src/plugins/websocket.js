@@ -27,6 +27,7 @@ export default function websocket(){
     });
     store.subscribe(mutation => {
       if (mutation.type === 'layout/SOCKET_SEND') {
+        store.commit('layout/wsState', wss.readyState);
         wss.send(JSON.stringify(mutation.payload))
       }
     })

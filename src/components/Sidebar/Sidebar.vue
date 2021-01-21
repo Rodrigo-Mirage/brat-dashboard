@@ -23,7 +23,7 @@
         index="submitrun"
         isHeader
       />
-      <NavLink
+      <NavLink v-if="this.permissions.includes('Admin')"
         :activeItem="activeItem"
         header="Admin"
         link="/app/admin"
@@ -31,7 +31,7 @@
         index="admin"
         isHeader
       />
-      <NavLink
+      <NavLink v-if="this.permissions.includes('Admin')"
         :activeItem="activeItem"
         header="Events"
         link="/app/events"
@@ -39,7 +39,7 @@
         index="events"
         isHeader
       />
-      <NavLink
+      <NavLink v-if="this.permissions.includes('Admin')"
         :activeItem="activeItem"
         header="Games"
         link="/app/games"
@@ -47,7 +47,7 @@
         index="games"
         isHeader
       />
-      <NavLink
+      <NavLink v-if="this.permissions.includes('Admin')"
         :activeItem="activeItem"
         header="Extras"
         link="/app/extras"
@@ -102,6 +102,7 @@ export default {
     ...mapState('layout', {
       sidebarOpened: state => !state.sidebarClose,
       activeItem: state => state.sidebarActiveElement,
+      permissions: state => state.permissions,
     }),
   },
 };
