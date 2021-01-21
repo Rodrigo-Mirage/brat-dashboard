@@ -37,8 +37,6 @@
                     v-model="row.year" 
                   /></td>
                   <td><b-button @click="edit(row.id, row.name, row.year)" variant="dark">Editar</b-button></td>
-       
-
                 </tr>
               </tbody>
             </table>

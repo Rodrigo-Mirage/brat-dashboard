@@ -19,6 +19,9 @@ export default function websocket(){
           case "getEventExtras":
             store.commit('layout/listExtras', payload.data);
             break;
+          case "getUserRuns":
+            store.commit('layout/listUserRuns', payload.data);
+            break;
           default:
             console.log("Mensagem do servidor: ", payload);
             //store.commit('receiveData', payload);

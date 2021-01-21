@@ -18,6 +18,7 @@ export default {
     gamesList: [],
     eventsList: [],
     extrasList: [],
+    userRuns: [],
 
     //current user
     id:'',
@@ -82,6 +83,9 @@ export default {
     listExtras(state, payload){
       state.extrasList = payload[0];
     },
+    listUserRuns(state, payload){
+      state.userRuns = payload[0][0];
+    },
     SOCKET_SEND(state, message){
       console.log('message sent: ' + message);
       state.curReq++;
@@ -112,6 +116,7 @@ export default {
       state.gamesList = [];
       state.eventsList = [];
       state.extrasList = [];
+      state.userRuns = [];
       router.push('/login');
     },
     wsState(state, curState){
