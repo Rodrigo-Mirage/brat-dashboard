@@ -88,7 +88,7 @@ export default {
   },
   async created(){
     const wsPayload = {"endpoint":"getEventExtras", "id":this.curReq};
-    await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+    this.$store.commit('layout/SOCKET_SEND', wsPayload);
   },
 };
 </script>

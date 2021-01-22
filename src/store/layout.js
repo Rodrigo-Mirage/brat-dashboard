@@ -19,6 +19,7 @@ export default {
     eventsList: [],
     extrasList: [],
     userRuns: [],
+    schedule: [],
 
     //current user
     id:'',
@@ -86,6 +87,9 @@ export default {
     listUserRuns(state, payload){
       state.userRuns = payload[0][0];
     },
+    listSchedule(state, payload){
+      state.schedule = payload[0];
+    },
     SOCKET_SEND(state, message){
       console.log('message sent: ' + message);
       state.curReq++;
@@ -117,6 +121,7 @@ export default {
       state.eventsList = [];
       state.extrasList = [];
       state.userRuns = [];
+      state.schedule = [];
       router.push('/login');
     },
     wsState(state, curState){
