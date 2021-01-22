@@ -9,7 +9,7 @@
     <b-row v-if="this.permissions.includes('Admin')">
       <b-col>
         <Widget
-          title="<h5>Tabela de <span class='fw-semi-bold'>Eventos Ativos</span></h5>"
+          title="<h5>Evento <span class='fw-semi-bold'>Ativo</span></h5>"
           customHeader collapse
         >
           <div class="table-resposive">
@@ -35,6 +35,7 @@
           <div class="clearfix">
             <div class="float-right">
               <router-link :to="`/app/events`"><b-button variant="dark">Gerenciar eventos</b-button></router-link>
+              <b-button @click='test' variant="dark">teste</b-button>
             </div>
           </div>
         </Widget>
@@ -125,6 +126,10 @@ export default {
     formatDate(date){
       moment.locale(navigator.language)
       return moment(date, "YYYY-MM-DD").format('DD MMMM YYYY');
+    },
+    test(){
+      const wsPayload = {"endpoint":"getEventSchedule", "id":this.curReq};
+      this.$store.commit('layout/SOCKET_SEND', wsPayload);
     }
   },
   computed: {
