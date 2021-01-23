@@ -7,6 +7,7 @@
           :title="event"
           customHeader collapse
         >
+        <!--
           <div class="table-resposive">
             <table class="table">
               <thead>
@@ -26,6 +27,41 @@
               </tbody>
             </table>
           </div>
+        -->
+
+<div class="table-resposive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="hidden-sm-down">#id</th>
+        <th>Horário</th>
+        <th>Jogo</th>
+        <th>Estimativa</th>
+        <th>Tempo Extra</th>
+        <th>Categoria</th>
+        <th>Plataforma</th>
+        <th>Runner</th>
+      </tr>
+    </thead>
+    <draggable v-model="tempSchedule" tag="tbody">
+      <tr v-for="row in tempSchedule" :key="row.id">
+        <td> {{ row.id }}</td>
+        <td> {{ row.duration }}</td>
+        <td> {{ row.game }}</td>
+        <td> {{ row.duration }}</td>
+        <td> {{ row.extra_time }}</td>
+        <td> {{ (row.category ? row.category:"") }}</td>
+        <td> {{ (row.platform ? row.platform:"") }}</td>
+        <td> {{ row.runner }}</td>
+      </tr>
+    </draggable>
+  </table>
+</div>
+
+
+
+
+<!-- -->
         </Widget>
       </b-col>
     </b-row>
@@ -34,6 +70,7 @@
 
 <script>
 import Widget from '@/components/Widget/Widget';
+import draggable from 'vuedraggable';
 import { mapState } from 'vuex';
 const moment = require('moment');
 let curTime = 0;
@@ -44,6 +81,8 @@ export default {
   data() {
     return{
       event: null,
+      tempSchedule: null,
+      dragging: false
     }
   },
   methods: {
@@ -58,6 +97,8 @@ export default {
       return moment(resp).format('HH:mm:ss');
     },
     resetTime(){
+      if(this.tempSchedule && this.tempSchedule[0]) { this.$store.commit('layout/updateSchedule', this.tempSchedule) }
+      if(this.schedule) { this.tempSchedule = this.schedule}
       curTime = 0;
       if(this.schedule[0] !== undefined) {
         this.event = "<h5>Agenda <span class='fw-semi-bold'>do Evento " + this.schedule[0].event_name + "</span></h5>";
@@ -112,7 +153,8 @@ export default {
     this.$store.commit('layout/SOCKET_SEND', wsPayload);
   },
   components:{
-    Widget
+    Widget,
+    draggable,
   }
 };
 </script>

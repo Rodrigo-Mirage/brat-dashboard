@@ -90,6 +90,14 @@ export default {
     listSchedule(state, payload){
       state.schedule = payload[0];
     },
+    updateSchedule(state, payload){
+      for(let val in payload){
+        payload[val].order = Number(val) + 1;
+      }
+      state.schedule = payload;
+      console.log('update');
+      console.log(state.schedule);
+    },
     SOCKET_SEND(state, message){
       console.log('message sent: ' + message);
       state.curReq++;
