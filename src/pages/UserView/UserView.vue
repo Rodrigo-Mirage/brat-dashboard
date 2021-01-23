@@ -73,7 +73,7 @@ export default {
   },
   created(){
      this.user = this.userList.find(element => String(element.id) === this.id);
-     console.log('id: ' + this.curUserId);
+     //console.log('id: ' + this.curUserId);
   },
   computed: {
     ...mapState('layout', {
@@ -86,7 +86,7 @@ export default {
     async removePermission(permission){
       const wsPayload = {"endpoint":"removePermission", "id":this.curReq, "info":{"updated_user": this.user.id, "updater_user": this.curUserId, "permission": permission}};
       await this.$store.commit('layout/SOCKET_SEND', wsPayload);
-      console.log("permissão removida: " + permission);
+      //console.log("permissão removida: " + permission);
     },
     async addPermission(){
       if(this.selectedPermission !== ''){

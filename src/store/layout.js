@@ -150,7 +150,7 @@ export default {
       const user = await UserService.getUser(id);
       //const wsPayload = {"endpoint":"getUser", "id":state.curReq, "info":{"id": id}};
       //commit('SOCKET_SEND', wsPayload);
-      console.log(user.data.res[0][0]);
+      //console.log(user.data.res[0][0]);
       commit('loadUser', {
         id: id,
         first_name: user.data.res[0][0].first_name,

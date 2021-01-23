@@ -1,52 +1,13 @@
 <template>
   <div class="visits-page">
-    {{ loadTest() }}
     <h1 class="page-title">Dashboard &nbsp;
       <small>
         <p v-if="this.permissions.includes('Admin')">Admin</p>
         <p v-else>User</p>
       </small>
     </h1>
-    <b-row v-if="this.permissions.includes('Admin')">
-      <b-col>
-        <Widget
-          title="<h5>Agenda <span class='fw-semi-bold'>do Evento</span></h5>"
-          customHeader collapse
-        >
-          <div class="table-resposive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th class="hidden-sm-down">#id</th>
-                  <th>Horário</th>
-                  <th>Jogo</th>
-                  <th>Estimativa</th>
-                  <th>Categoria</th>
-                  <th>Plataforma</th>
-                  <th>Runner</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row in this.schedule" :key="row.id">
-                  <td>{{row.id}}</td>
-                  <td>{{formatHorary(row.event_date, row.duration, row.extra_time)}}</td>
-                  <td>{{row.game}}</td>
 
-                  <td>{{formatSeconds(row.duration)}}</td>
-
-                  <td>{{row.category}}</td>
-                  <td>{{row.platform}}</td>
-
-
-                  <td v-if="row.stream_link"><a href="http://www.twitch.tv">{{row.runner}}</a></td>
-                  <td v-else>{{row.runner}}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </Widget>
-      </b-col>
-    </b-row>
+    <Schedule/>
 
     <b-row v-if="this.permissions.includes('Admin')">
       <b-col>
@@ -77,7 +38,6 @@
           <div class="clearfix">
             <div class="float-right">
               <router-link :to="`/app/events`"><b-button variant="dark">Gerenciar eventos</b-button></router-link>
-              <b-button @click='test' variant="dark">teste</b-button>
             </div>
           </div>
         </Widget>
@@ -135,9 +95,9 @@
 
 <script>
 import Widget from '@/components/Widget/Widget';
+import Schedule from './components/Schedule';
 import { mapState } from 'vuex';
 const moment = require('moment');
-let curTime = 0;
 export default {
   name: 'Visits',
   data() {
@@ -173,19 +133,6 @@ export default {
     formatSeconds(seconds){
       return moment("2021-01-01").startOf('day').seconds(seconds).format('HH:mm:ss');
     },
-    formatHorary(date, duration, extra){
-      const resp = moment(date).valueOf() + curTime;
-      curTime += duration*1000;
-      if(extra){ curTime += extra*1000 }
-      return moment.unix(resp).format('HH:mm:ss');
-    },
-    test(){
-      this.$store.commit('layout/listSchedule', []);
-    },
-    loadTest(){
-      curTime = 0;
-      console.log('template carregou');
-    }
   },
   computed: {
     ...mapState('layout', {
@@ -194,7 +141,6 @@ export default {
       id: state => state.id,
       userRuns: state => state.userRuns,
       eventsList: state => state.eventsList,
-      schedule: state => state.schedule,
     }),
   },
   created(){
@@ -203,12 +149,10 @@ export default {
 
     wsPayload = {"endpoint":"getEvents", "id":this.curReq};
     this.$store.commit('layout/SOCKET_SEND', wsPayload);
-
-    wsPayload = {"endpoint":"getEventSchedule", "id":this.curReq};
-    this.$store.commit('layout/SOCKET_SEND', wsPayload);
   },
   components:{
-    Widget
+    Widget,
+    Schedule
   }
 };
 </script>

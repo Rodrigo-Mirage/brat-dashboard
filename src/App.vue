@@ -26,7 +26,7 @@ export default {
   },
   async created() {
     const currentPath = this.$router.history.current.path;
-    console.log(this.wsState);
+    //console.log(this.wsState);
 
     if (window.localStorage.getItem('authenticated') === 'true' && window.localStorage.getItem('curUser')) {
       await this.loadUser(window.localStorage.getItem('curUser'));

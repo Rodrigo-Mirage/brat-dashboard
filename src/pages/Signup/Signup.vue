@@ -327,7 +327,7 @@ export default {
                     this.form.facebook,
                     this.form.instagram,
                     this.form.youtube);
-          console.log(response);
+          //console.log(response);
           
           if (response) {
             this.$router.push('/login');
