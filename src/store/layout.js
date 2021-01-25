@@ -95,15 +95,13 @@ export default {
         payload[val].order = Number(val) + 1;
       }
       state.schedule = payload;
-      console.log('update');
-      console.log(state.schedule);
     },
     SOCKET_SEND(state, message){
       console.log('message sent: ' + message);
       state.curReq++;
     },
     logout(state){
-      console.log(state);
+      //console.log(state);
       window.localStorage.setItem('authenticated', false);
       window.localStorage.removeItem('token');
       window.localStorage.removeItem('curUser');
