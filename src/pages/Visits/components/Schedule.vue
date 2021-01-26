@@ -68,7 +68,9 @@
 
                   <td> {{ formatInterval(row.extra_time) }}</td>
                   <td> {{ (row.category ? row.category:"") }}</td>
-                  <td> {{ (row.interval ? row.interval:"") }} </td>
+
+                  <td> {{ (row.interval ? translateInterval(row.interval):"") }} </td>
+
                   <td> {{ (row.platform ? row.platform:"") }}</td>
 
                   <td v-if="row.stream_link"><a :href=row.stream_link> {{ row.runner }} </a></td>
@@ -142,7 +144,6 @@ export default {
       }else{
         resp += ":00"
       }
-      console.log('esse: ', resp)
       return resp;
     },
     formatHorary(date, duration, extra){
@@ -152,13 +153,14 @@ export default {
       return moment(resp).format('HH:mm:ss [de] DD/MM/YYYY');
     },
     onReload(){
-      console.log(this.schedule);
+      console.log('reload');
       if(this.tempSchedule && this.tempSchedule[0]) { this.$store.commit('layout/updateSchedule', this.tempSchedule) }
-      if(this.schedule) { this.tempSchedule = this.schedule}
+      if(this.schedule) {
+        this.tempSchedule = this.schedule
+      }
       curTime = 0;
       if(this.schedule[0] !== undefined) {
         this.event = "<h5>Agenda <span class='fw-semi-bold'>do Evento " + this.schedule[0].event_name + "</span></h5>";
-        //curDay = this.schedule[0].event_date;
       }else{
         this.event = "<h5>Agenda <span class='fw-semi-bold'>do Evento</span></h5>";
       }
@@ -208,9 +210,9 @@ export default {
       }
     },
     toSeconds(time){
-      console.log("outro: ", time);
       let resp = time.split(':');
       resp = (resp[0] ? Number(resp[0])*3600 : 0) + (resp[1] ? Number(resp[1])*60 : 0) + (resp[2] ? Number(resp[2]) : 0);
+      //TODO
       return resp;
     },
     createSetup(idx){
@@ -247,6 +249,22 @@ export default {
           idx--;
         }
       }
+    },
+    translateInterval(interval){
+      //Manhã     = 1000;
+      //Tarde     = 0100;
+      //Noite     = 0010;
+      //Madrugada = 0001;
+      if(interval){
+        let resp = [];
+        if(interval[0] === '1') resp.push("Manhã")
+        if(interval[1] === '1') resp.push("Tarde")
+        if(interval[2] === '1') resp.push("Noite")
+        if(interval[3] === '1') resp.push("Madrugada")
+        resp = resp.join(", ")
+        return resp;
+      }
+      return '';
     }
   },
   computed: {
@@ -264,6 +282,12 @@ export default {
   created(){
     const wsPayload = {"endpoint":"getEventSchedule", "id":this.curReq};
     this.$store.commit('layout/SOCKET_SEND', wsPayload);
+  },
+  watch:{
+    schedule: function(){
+      //const wsPayload = {"endpoint":"updateEventSchedule", "id":this.curReq, "info":{ "data": JSON.stringify(this.schedule) }};
+      //this.$store.commit('layout/SOCKET_SEND', wsPayload);
+    }
   },
   components:{
     Widget,

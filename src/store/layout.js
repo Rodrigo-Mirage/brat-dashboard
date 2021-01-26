@@ -91,6 +91,9 @@ export default {
       state.schedule = payload[0];
     },
     updateSchedule(state, payload){
+      //console.log("diff", state.schedule.filter(({ id: id1 }) => !payload.some(({ id: id2 }) => id2 === id1)))
+      //console.log("payload:", payload);
+      //console.log("schedule:", state.schedule);
       for(let val in payload){
         payload[val].order = Number(val) + 1;
       }

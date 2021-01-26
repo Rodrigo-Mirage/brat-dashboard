@@ -100,6 +100,8 @@
 
             <b-form-row>
               <b-col cols="6">
+
+<!--
                 <b-form-group label="Intervalo" label-for="timeSlot">
                   <b-input-group>
                     <input id="timeSlot"
@@ -112,6 +114,16 @@
                   </b-input-group>
                   <small>Informar o intervalo de tempo preferido para realização da run (manhã, tarde, noite ou madrugada).</small>
                 </b-form-group>
+-->
+                <b-form-group label="Intervalo" v-slot="{ ariaDescribedby }">
+                  <b-form-checkbox-group
+                    id="checkbox-group"
+                    v-model="timeSlots"
+                    :options="timeSlotOptions"
+                    :aria-describedby="ariaDescribedby"
+                  ></b-form-checkbox-group>
+                </b-form-group>
+
               </b-col>
               <b-col cols="6">
                 <b-form-group label="Plataforma" label-for="platform">
@@ -164,6 +176,13 @@ export default {
       results: [],
       arrowCounter: -1,
 
+      timeSlots: [],
+      timeSlotOptions: [
+        { text: 'Manhã', value: 'manha' },
+        { text: 'Tarde', value: 'tarde' },
+        { text: 'Noite', value: 'noite' },
+        { text: 'Madrugada', value: 'madrugada' }
+      ],
       form: {
         category: '',
         estimatedTime: '',
@@ -237,6 +256,8 @@ export default {
     },
     //submit request methods
     async submit() {
+
+      console.log(this.form.timeSlot);
       if(this.inputValidation()){
         let formatTime = this.form.estimatedTime.split(':');
         let estimatedSeconds = 0;
@@ -251,7 +272,17 @@ export default {
             continue;
           }
         }
-        
+
+        //Manhã     = 1000;
+        //Tarde     = 0100;
+        //Noite     = 0010;
+        //Madrugada = 0001;
+        this.form.timeSlot = '';
+        this.timeSlots.includes('manha') ? this.form.timeSlot += 1 : this.form.timeSlot += 0;
+        this.timeSlots.includes('tarde') ? this.form.timeSlot += 1 : this.form.timeSlot += 0;
+        this.timeSlots.includes('noite') ? this.form.timeSlot += 1 : this.form.timeSlot += 0;
+        this.timeSlots.includes('madrugada') ? this.form.timeSlot += 1 : this.form.timeSlot += 0;
+
         let wsPayload = null;
         if(this.form.gameId !== null){
           wsPayload = {"endpoint":"createRun", "id":this.curReq, "info":{
@@ -299,10 +330,6 @@ export default {
       }
       if(!this.form.estimatedTime || /^\s*$/.test(this.form.estimatedTime)) {
         this.errors.estimatedTime = 'Tempo estimado: Campo obrigatório';
-        validationCheck = false
-      }
-      if(!this.form.timeSlot || /^\s*$/.test(this.form.timeSlot)) {
-        this.errors.timeSlot = 'Intervalo: Campo obrigatório';
         validationCheck = false
       }
       if(!this.form.platform || /^\s*$/.test(this.form.platform)) {

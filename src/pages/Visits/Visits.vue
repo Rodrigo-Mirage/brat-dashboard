@@ -68,7 +68,7 @@
                   <td>{{ row.game }}</td>
                   <td>{{ row.category }}</td>
                   <td>{{ row.platform }}</td>
-                  <td>{{ row.time_slot }}</td>
+                  <td>{{ translateInterval(row.time_slot) }}</td>
                   <td>
                     <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 0" variant='gray'> Não Revisada </b-badge>
                     <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 1" variant='success'> Aprovada </b-badge>
@@ -133,6 +133,22 @@ export default {
     formatSeconds(seconds){
       return moment("2021-01-01").startOf('day').seconds(seconds).format('HH:mm:ss');
     },
+    translateInterval(interval){
+      //Manhã     = 1000;
+      //Tarde     = 0100;
+      //Noite     = 0010;
+      //Madrugada = 0001;
+      if(interval){
+        let resp = [];
+        if(interval[0] === '1') resp.push("Manhã")
+        if(interval[1] === '1') resp.push("Tarde")
+        if(interval[2] === '1') resp.push("Noite")
+        if(interval[3] === '1') resp.push("Madrugada")
+        resp = resp.join(", ")
+        return resp;
+      }
+      return '';
+    }
   },
   computed: {
     ...mapState('layout', {
