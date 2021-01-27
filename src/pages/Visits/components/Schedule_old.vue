@@ -1,42 +1,41 @@
 <template>
   <div>
-  <!-- Function that is triggered to update initial values -->
-  {{ onReload() }}
-    <b-row v-if="this.permissions.includes('Admin')">
+    <!-- Function that is triggered to update array values -->
+    {{onReload()}}
+     <b-row v-if="this.permissions.includes('Admin')">
       <b-col>
         <Widget
-          :title="eventTitle"
+          :title="event"
           customHeader collapse
         >
-
-          <!-- Modal Confirmations -->
+        <!-- Modal Confirmations -->
           <b-modal 
-            id='remove-row' 
-            title="Remoção de agendamento"
-            centered
-            ok-variant="dark"
-            cancel-variant="dark"
-            ok-title="Confirmar"
-            cancel-title="Cancelar"
-            @ok="confirmRowRemotion">
-              <p class="my-4">Tem certeza que deseja removar o agendamento? </p>
+          id='remove-row' 
+          title="Remoção de agendamento"
+          centered
+          ok-variant="dark"
+          cancel-variant="dark"
+          ok-title="Confirmar"
+          cancel-title="Cancelar"
+          @ok="confirmRowRemotion">
+            <p class="my-4">Tem certeza que deseja removar o agendamento de id {{ tempSchedule[removeIdx] ? tempSchedule[removeIdx].id : "Not Found"}}? </p>
           </b-modal>
 
           <b-modal 
-            id='remove-setups' 
-            title="Remoção de tempos de setup"
-            centered
-            ok-variant="dark"
-            cancel-variant="dark"
-            ok-title="Confirmar"
-            cancel-title="Cancelar"
-            @ok="confirmSetupRemotion">
-              <p class="my-4">Tem certeza que deseja removar os tempos de setup? </p>
+          id='remove-setups' 
+          title="Remoção de tempos de setup"
+          centered
+          ok-variant="dark"
+          cancel-variant="dark"
+          ok-title="Confirmar"
+          cancel-title="Cancelar"
+          @ok="confirmSetupRemotion">
+            <p class="my-4">Tem certeza que deseja removar os tempos de setup? </p>
           </b-modal>
 
-        <!-- Schedule Creator -->
+          <!-- Schedule Creator -->
           <div class="table-resposive">
-            <table class="table" v-if="schedule.length !== 0">
+            <table class="table" v-if="tempSchedule.length !== 0">
               <thead>
                 <tr>
                   <th class="hidden-sm-down"></th>
@@ -54,17 +53,17 @@
                 </tr>
               </thead>
               <draggable 
-                v-model="schedule" 
-                tag="tbody"
+                v-model="tempSchedule" 
+                tag="tbody" 
+                @change="updateSchedule" 
                 ghost-class="ghost"
-                @change="updateSchedule"
                 animation='100'
               >
-                <tr v-for="(row, idx) in schedule" :key="idx" class="dnd-item">
+                <tr v-for="row in tempSchedule" :key="row.id" class="dnd-item">
                   <td class="dnd-handle"> <i class="fa fa-align-justify handle"></i> </td>
                   <td> {{ row.id }}</td>
                   <td> {{ formatHorary(row.event_date, row.duration, row.extra_time) }}</td>
-                  <td> {{ row.game }} {{ row.order }}</td>
+                  <td> {{ row.game }}</td>
                   
                   <td v-if="row.type !== 'setup'"> {{ formatInterval(row.duration) }}</td>
                   <td v-else><input
@@ -87,7 +86,7 @@
                   <td v-else> {{ row.runner }} </td>
 
                   
-                  <td v-if="row.type !== 'setup'"> <b-button @click="addSetup(idx)" variant="dark">Adicionar setup</b-button> </td>
+                  <td v-if="row.type !== 'setup'"> <b-button @click="addSetup(row.order-1)" variant="dark">Adicionar setup</b-button> </td>
                   <td v-else> </td>
 
                   <td> <i class="fa fa-times close" @click="removeAt(row.order-1)"></i> </td>
@@ -118,17 +117,27 @@ export default {
   name: 'Schedule',
   data() {
     return{
+      event: null,
+      tempSchedule: null,
       dragging: false,
-      eventTitle: '',
       removeIdx: -1,
     }
   },
-  created(){
-    console.log('created');
-    const wsPayload = {"endpoint":"getEventSchedule", "id":this.curReq};
-    this.$store.commit('layout/SOCKET_SEND', wsPayload);
-  },
-  methods:{
+  methods: {
+    //Reload Function
+    onReload(){
+      console.log('reload');
+      if(this.tempSchedule && this.tempSchedule[0]) { this.$store.commit('layout/updateSchedule', this.tempSchedule) }
+      if(this.schedule) {
+        this.tempSchedule = this.schedule
+      }
+      curTime = 0;
+      if(this.schedule[0] !== undefined) {
+        this.event = "<h5>Agenda <span class='fw-semi-bold'>do Evento " + this.schedule[0].event_name + "</span></h5>";
+      }else{
+        this.event = "<h5>Agenda <span class='fw-semi-bold'>do Evento</span></h5>";
+      }
+    },
     //String Formatting
     formatInterval(time){
       if(!time) return ""
@@ -187,33 +196,35 @@ export default {
       }
       return '';
     },
-    //Schedule Create
+    //Schedule Add
     async createSetup(idx){
       const setup = {
         "type": "setup",
-        "event_id": this.schedule[idx].event_id,
-        "event_name": this.schedule[idx].event_name,
-        "event_date": this.schedule[idx].event_date,
+        "event_id": this.tempSchedule[idx].event_id,
+        "event_name": this.tempSchedule[idx].event_name,
+        "event_date": this.tempSchedule[idx].event_date,
         "game": "Setup",
         "duration": 600,
         "order": idx+1,
-        };
-      await this.schedule.splice(idx, 0, setup);
-      for(let val in this.schedule){
-        this.schedule[val].order = Number(val) + 1;
+        }
+      await this.tempSchedule.splice(idx, 0, setup);
+
+      let data = [];
+      for(let event in this.tempSchedule){
+        data.push({ "id": this.tempSchedule[event].id, "order": this.tempSchedule[event].order });
       }
-      await this.createSchedule(setup);
-      console.log(this.schedule);
+      this.addSchedule(setup, data);
     },
     addSetup(idx){
-      if(!(this.schedule[idx-1] && this.schedule[idx-1].type === 'setup') ){
+      if(!(this.tempSchedule[idx-1] && this.tempSchedule[idx-1].type === 'setup') ){
         this.createSetup(idx);
       }
     },
-    async addSetups(){
-      for(let idx = 0; idx < this.schedule.length; idx++){
-        if(!(this.schedule[idx-1] && this.schedule[idx-1].type === 'setup' || this.schedule[idx].type === 'setup')){
-          await this.createSetup(idx);
+    addSetups(){
+      for(let idx = 0; idx < this.tempSchedule.length; idx++){
+        if(!(this.tempSchedule[idx-1] && this.tempSchedule[idx-1].type === 'setup' || this.tempSchedule[idx].type === 'setup')){
+          this.createSetup(idx);
+          console.log("Multiple Setups Added");
         }
       }
     },
@@ -222,11 +233,10 @@ export default {
       this.$bvModal.show('remove-setups');
     },
     confirmSetupRemotion(){
-      for(let idx = 0; idx < this.schedule.length; idx++){
-        if(this.schedule[idx].type === 'setup'){
-          console.log('removido em ', idx);
+      for(let idx = 0; idx < this.tempSchedule.length; idx++){
+        if(this.tempSchedule[idx].type === 'setup'){
           this.deleteSchedule(idx);
-          this.schedule.splice(idx, 1);
+          this.tempSchedule.splice(idx, 1);
           idx--;
         }
       }
@@ -237,22 +247,18 @@ export default {
     },
     confirmRowRemotion(){
       this.deleteSchedule(this.removeIdx);
-      this.schedule.splice(this.removeIdx, 1);
+      this.tempSchedule.splice(this.removeIdx, 1);
     },
     //Websocket Request Functions
     updateSchedule(){
       let data = [];
-      for(let event in this.schedule){
-        data.push({ "id": this.schedule[event].id, "order": this.schedule[event].order });
+      for(let event in this.tempSchedule){
+        data.push({ "id": this.tempSchedule[event].id, "order": this.tempSchedule[event].order });
       }
       const wsPayload = {"endpoint":"updateEventSchedule", "id":this.curReq, "info":{ "data": JSON.stringify(data) }};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
     },
-    createSchedule(setup){
-      let data = [];
-      for(let event in this.schedule){
-        data.push({ "id": this.schedule[event].id, "order": this.schedule[event].order });
-      }
+    addSchedule(setup, data){
       const wsPayload = {"endpoint":"createSetupEventSchedule", "id":this.curReq, "info":{ 
         "duration": setup.duration, 
         "event_id": setup.event_id,
@@ -264,41 +270,74 @@ export default {
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
     },
     deleteSchedule(idx){
-      const wsPayload = {"endpoint":"deleteEventSchedule", "id":this.curReq, "info":{ "id": this.schedule[idx].id }};
+      const wsPayload = {"endpoint":"deleteEventSchedule", "id":this.curReq, "info":{ "id": this.tempSchedule[idx].id }};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
     },
-
-
-
-
-    onReload(){
-      curTime = 0
-      if(this.schedule[0] !== undefined) {
-        this.eventTitle = "<h5>Agenda <span class='fw-semi-bold'>do Evento " + this.schedule[0].event_name + "</span></h5>";
-      }else{
-        this.eventTitle = "<h5>Agenda <span class='fw-semi-bold'>do Evento</span></h5>";
+    //Temp Functions
+    createTable(){
+      if(document.getElementById('schedule-table')){
+        document.getElementById('schedule-table').innerHTML = '';
+        for(let idx in this.tempSchedule){
+          const row = this.tempSchedule[idx];
+          /*
+          if(newDay){
+            document.getElementById('schedule-table').innerHTML +=
+            '<tr style="background-color: #282b56">' + 
+              '<td>' + moment(curDay, "YYYY-MM-DD").format('DD [do] MM [de] YYYY') + '</td>' +
+              '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>' +
+            '</tr>';
+            newDay = false;
+          }
+          */
+          document.getElementById('schedule-table').innerHTML += 
+          '<tr>' + 
+            '<td>' + row.id + '</td>' +
+            '<td>' + this.formatHorary(row.event_date, row.duration, row.extra_time) + '</td>' +
+            '<td>' + row.game + '</td>' +
+            '<td>' + this.formatSeconds(row.duration) + '</td>' +
+            '<td>' + this.formatSeconds(row.extra_time) + '</td>' +
+            '<td>' + (row.category ? row.category:"") + '</td>' +
+            '<td>' + (row.platform ? row.platform:"") + '</td>' +
+            '<td>' + (row.stream_link ? '<a href=' + row.stream_link + '>': "") + (row.runner ? row.runner:"") + (row.stream_link ? '</a>':"") + '</td>' +
+          '</tr>';
+          //if the curDay day value is different from the (event starting day + curTime offsite) day value then we update curday value and it's a new day.
+          /*
+          if( moment(curDay, "YYYY-MM-DD").format('DD') !== moment((moment(row.event_date)+curTime)).format('DD-MM-YY').substring(0,2)){
+            curDay = moment((moment(row.event_date)+curTime)).format('YYYY-MM-DD');
+            newDay = true;
+          }
+          */
+        }
+        //newDay = true;
       }
-      console.log('updating');
-    }
+    },
+
   },
   computed: {
     ...mapState('layout', {
       permissions: state => state.permissions,
       curReq: state => state.curReq,
+      schedule: state => state.schedule,
     }),
-    schedule: {
-      get() {
-          return this.$store.state.layout.schedule;
-      },
-      set(value) {
-          this.$store.commit('layout/updateScheduleList', value)
+  },
+  created(){
+    const wsPayload = {"endpoint":"getEventSchedule", "id":this.curReq};
+    this.$store.commit('layout/SOCKET_SEND', wsPayload);
+  },
+  watch:{
+    tempSchedule: function(){
+      for(let val in this.tempSchedule){
+        this.tempSchedule[val].order = Number(val) + 1;
       }
+    },
+    schedule: function(){
+      console.log('schedule mudou');
     }
   },
   components:{
     Widget,
-    draggable
-  },
+    draggable,
+  }
 };
 </script>
 

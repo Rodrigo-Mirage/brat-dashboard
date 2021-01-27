@@ -95,7 +95,7 @@
 
 <script>
 import Widget from '@/components/Widget/Widget';
-import Schedule from './components/Schedule2';
+import Schedule from './components/Schedule';
 import { mapState } from 'vuex';
 const moment = require('moment');
 export default {

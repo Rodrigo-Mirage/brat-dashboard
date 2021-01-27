@@ -1,41 +1,42 @@
 <template>
   <div>
-    <!-- Function that is triggered to update array values -->
-    {{onReload()}}
-     <b-row v-if="this.permissions.includes('Admin')">
+  <!-- Function that is triggered to update initial values -->
+  {{ onReload() }}
+    <b-row v-if="this.permissions.includes('Admin')">
       <b-col>
         <Widget
-          :title="event"
+          :title="eventTitle"
           customHeader collapse
         >
-        <!-- Modal Confirmations -->
+
+          <!-- Modal Confirmations -->
           <b-modal 
-          id='remove-row' 
-          title="Remoção de agendamento"
-          centered
-          ok-variant="dark"
-          cancel-variant="dark"
-          ok-title="Confirmar"
-          cancel-title="Cancelar"
-          @ok="confirmRowRemotion">
-            <p class="my-4">Tem certeza que deseja removar o agendamento de id {{ tempSchedule[removeIdx] ? tempSchedule[removeIdx].id : "Not Found"}}? </p>
+            id='remove-row' 
+            title="Remoção de agendamento"
+            centered
+            ok-variant="dark"
+            cancel-variant="dark"
+            ok-title="Confirmar"
+            cancel-title="Cancelar"
+            @ok="confirmRowRemotion">
+              <p class="my-4">Tem certeza que deseja removar o agendamento? </p>
           </b-modal>
 
           <b-modal 
-          id='remove-setups' 
-          title="Remoção de tempos de setup"
-          centered
-          ok-variant="dark"
-          cancel-variant="dark"
-          ok-title="Confirmar"
-          cancel-title="Cancelar"
-          @ok="confirmSetupRemotion">
-            <p class="my-4">Tem certeza que deseja removar os tempos de setup? </p>
+            id='remove-setups' 
+            title="Remoção de tempos de setup"
+            centered
+            ok-variant="dark"
+            cancel-variant="dark"
+            ok-title="Confirmar"
+            cancel-title="Cancelar"
+            @ok="confirmSetupRemotion">
+              <p class="my-4">Tem certeza que deseja removar os tempos de setup? </p>
           </b-modal>
 
-          <!-- Schedule Creator -->
+        <!-- Schedule Creator -->
           <div class="table-resposive">
-            <table class="table" v-if="tempSchedule.length !== 0">
+            <table class="table" v-if="schedule.length !== 0">
               <thead>
                 <tr>
                   <th class="hidden-sm-down"></th>
@@ -53,27 +54,39 @@
                 </tr>
               </thead>
               <draggable 
-                v-model="tempSchedule" 
-                tag="tbody" 
-                @change="updateSchedule" 
+                v-model="schedule" 
+                tag="tbody"
                 ghost-class="ghost"
+                @change="updateSchedule"
                 animation='100'
               >
-                <tr v-for="row in tempSchedule" :key="row.id" class="dnd-item">
+                <tr v-for="(row, idx) in schedule" :key="idx" class="dnd-item">
                   <td class="dnd-handle"> <i class="fa fa-align-justify handle"></i> </td>
                   <td> {{ row.id }}</td>
                   <td> {{ formatHorary(row.event_date, row.duration, row.extra_time) }}</td>
-                  <td> {{ row.game }}</td>
+                  <td> {{ row.game }} {{ row.order }}</td>
                   
                   <td v-if="row.type !== 'setup'"> {{ formatInterval(row.duration) }}</td>
-                  <td v-else><input
+                  <td v-else>
+                    <!--
+                    <input
                     :value=formatInterval(row.duration)
                     @input="row.duration = toSeconds($event.target.value)"
                     ref="duration"
                     class="form-control input-transparent pl-3"
                     type="time"
                     step='1'
-                  /></td>
+                    />
+                    -->
+                    <input
+                      :value=formatInterval(row.duration)
+                      @input="toSeconds($event.target.value)"
+                      ref="duration"
+                      class="form-control input-transparent pl-3"
+                      type="time"
+                      step='1'
+                    />
+                  </td>
 
                   <td> {{ formatInterval(row.extra_time) }}</td>
                   <td> {{ (row.category ? row.category:"") }}</td>
@@ -86,7 +99,7 @@
                   <td v-else> {{ row.runner }} </td>
 
                   
-                  <td v-if="row.type !== 'setup'"> <b-button @click="addSetup(row.order-1)" variant="dark">Adicionar setup</b-button> </td>
+                  <td v-if="row.type !== 'setup'"> <b-button @click="addSetup(idx)" variant="dark">Adicionar setup</b-button> </td>
                   <td v-else> </td>
 
                   <td> <i class="fa fa-times close" @click="removeAt(row.order-1)"></i> </td>
@@ -117,27 +130,17 @@ export default {
   name: 'Schedule',
   data() {
     return{
-      event: null,
-      tempSchedule: null,
       dragging: false,
+      eventTitle: '',
       removeIdx: -1,
     }
   },
-  methods: {
-    //Reload Function
-    onReload(){
-      console.log('reload');
-      if(this.tempSchedule && this.tempSchedule[0]) { this.$store.commit('layout/updateSchedule', this.tempSchedule) }
-      if(this.schedule) {
-        this.tempSchedule = this.schedule
-      }
-      curTime = 0;
-      if(this.schedule[0] !== undefined) {
-        this.event = "<h5>Agenda <span class='fw-semi-bold'>do Evento " + this.schedule[0].event_name + "</span></h5>";
-      }else{
-        this.event = "<h5>Agenda <span class='fw-semi-bold'>do Evento</span></h5>";
-      }
-    },
+  created(){
+    console.log('created');
+    const wsPayload = {"endpoint":"getEventSchedule", "id":this.curReq};
+    this.$store.commit('layout/SOCKET_SEND', wsPayload);
+  },
+  methods:{
     //String Formatting
     formatInterval(time){
       if(!time) return ""
@@ -166,6 +169,7 @@ export default {
       }else{
         resp += ":00"
       }
+      console.log(resp);
       return resp;
     },
     formatHorary(date, duration, extra){
@@ -175,9 +179,11 @@ export default {
       return moment(resp).format('HH:mm:ss [de] DD/MM/YYYY');
     },
     toSeconds(time){
+      console.log('on input: ', time);
       let resp = time.split(':');
       resp = (resp[0] ? Number(resp[0])*3600 : 0) + (resp[1] ? Number(resp[1])*60 : 0) + (resp[2] ? Number(resp[2]) : 0);
       //TODO
+      console.log('resp: ', resp);
       return resp;
     },
     translateInterval(interval){
@@ -196,47 +202,67 @@ export default {
       }
       return '';
     },
-    //Schedule Add
+    //Schedule Create
     async createSetup(idx){
-      const setup = {
-        "type": "setup",
-        "event_id": this.tempSchedule[idx].event_id,
-        "event_name": this.tempSchedule[idx].event_name,
-        "event_date": this.tempSchedule[idx].event_date,
-        "game": "Setup",
-        "duration": 600,
-        "order": idx+1,
+      let setups = []
+      if(idx !== -1){
+        //One setup
+        const setup = {
+          "type": "setup",
+          "event_id": this.schedule[idx].event_id,
+          "event_name": this.schedule[idx].event_name,
+          "event_date": this.schedule[idx].event_date,
+          "game": "Setup",
+          "duration": 600,
+          "order": idx+1,
+        };
+        await this.schedule.splice(idx, 0, setup);
+        for(let val in this.schedule){
+          this.schedule[val].order = Number(val) + 1;
         }
-      await this.tempSchedule.splice(idx, 0, setup);
-
-      let data = [];
-      for(let event in this.tempSchedule){
-        data.push({ "id": this.tempSchedule[event].id, "order": this.tempSchedule[event].order });
+        setups.push(setup);
+      }else{
+        //Multiple setups
+        for(let idx = 0; idx < this.schedule.length; idx++){
+          if(!(this.schedule[idx-1] && this.schedule[idx-1].type === 'setup' || this.schedule[idx].type === 'setup')){
+            console.log('a');
+            const setup = {
+              "type": "setup",
+              "event_id": this.schedule[idx].event_id,
+              "event_name": this.schedule[idx].event_name,
+              "event_date": this.schedule[idx].event_date,
+              "game": "Setup",
+              "duration": 600,
+              "order": idx+1,
+            };
+            await this.schedule.splice(idx, 0, setup);
+            for(let val in this.schedule){
+              this.schedule[val].order = Number(val) + 1;
+            }
+            setups.push(setup);
+          }
+        }
       }
-      this.addSchedule(setup, data);
+      await this.createSchedule(setups);
     },
     addSetup(idx){
-      if(!(this.tempSchedule[idx-1] && this.tempSchedule[idx-1].type === 'setup') ){
+      if(!(this.schedule[idx-1] && this.schedule[idx-1].type === 'setup') ){
         this.createSetup(idx);
       }
     },
     addSetups(){
-      for(let idx = 0; idx < this.tempSchedule.length; idx++){
-        if(!(this.tempSchedule[idx-1] && this.tempSchedule[idx-1].type === 'setup' || this.tempSchedule[idx].type === 'setup')){
-          this.createSetup(idx);
-          console.log("Multiple Setups Added");
-        }
-      }
+      this.createSetup(-1);
     },
     //Schedule Remove
     removeSetups(){
       this.$bvModal.show('remove-setups');
     },
     confirmSetupRemotion(){
-      for(let idx = 0; idx < this.tempSchedule.length; idx++){
-        if(this.tempSchedule[idx].type === 'setup'){
+      for(let idx = 0; idx < this.schedule.length; idx++){
+        if(this.schedule[idx].type === 'setup'){
+          console.log('removido em ', idx);
           this.deleteSchedule(idx);
-          this.tempSchedule.splice(idx, 1);
+          this.schedule.splice(idx, 1);
           idx--;
         }
       }
@@ -247,97 +273,71 @@ export default {
     },
     confirmRowRemotion(){
       this.deleteSchedule(this.removeIdx);
-      this.tempSchedule.splice(this.removeIdx, 1);
+      this.schedule.splice(this.removeIdx, 1);
     },
     //Websocket Request Functions
     updateSchedule(){
       let data = [];
-      for(let event in this.tempSchedule){
-        data.push({ "id": this.tempSchedule[event].id, "order": this.tempSchedule[event].order });
+      for(let event in this.schedule){
+        data.push({ "id": this.schedule[event].id, "order": this.schedule[event].order });
       }
       const wsPayload = {"endpoint":"updateEventSchedule", "id":this.curReq, "info":{ "data": JSON.stringify(data) }};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
     },
-    addSchedule(setup, data){
+    createSchedule(setups){
+      let data = [];
+      for(let event in this.schedule){
+        data.push({ "id": this.schedule[event].id, "order": this.schedule[event].order });
+      }
       const wsPayload = {"endpoint":"createSetupEventSchedule", "id":this.curReq, "info":{ 
+        "data": JSON.stringify(data),
+        "setups": setups,
+        /*
         "duration": setup.duration, 
         "event_id": setup.event_id,
         "game": setup.game,
         "order": setup.order,
         "type": setup.type, 
-        "data": JSON.stringify(data),
+        */
         }};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
     },
     deleteSchedule(idx){
-      const wsPayload = {"endpoint":"deleteEventSchedule", "id":this.curReq, "info":{ "id": this.tempSchedule[idx].id }};
+      const wsPayload = {"endpoint":"deleteEventSchedule", "id":this.curReq, "info":{ "id": this.schedule[idx].id }};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
     },
-    //Temp Functions
-    createTable(){
-      if(document.getElementById('schedule-table')){
-        document.getElementById('schedule-table').innerHTML = '';
-        for(let idx in this.tempSchedule){
-          const row = this.tempSchedule[idx];
-          /*
-          if(newDay){
-            document.getElementById('schedule-table').innerHTML +=
-            '<tr style="background-color: #282b56">' + 
-              '<td>' + moment(curDay, "YYYY-MM-DD").format('DD [do] MM [de] YYYY') + '</td>' +
-              '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>' +
-            '</tr>';
-            newDay = false;
-          }
-          */
-          document.getElementById('schedule-table').innerHTML += 
-          '<tr>' + 
-            '<td>' + row.id + '</td>' +
-            '<td>' + this.formatHorary(row.event_date, row.duration, row.extra_time) + '</td>' +
-            '<td>' + row.game + '</td>' +
-            '<td>' + this.formatSeconds(row.duration) + '</td>' +
-            '<td>' + this.formatSeconds(row.extra_time) + '</td>' +
-            '<td>' + (row.category ? row.category:"") + '</td>' +
-            '<td>' + (row.platform ? row.platform:"") + '</td>' +
-            '<td>' + (row.stream_link ? '<a href=' + row.stream_link + '>': "") + (row.runner ? row.runner:"") + (row.stream_link ? '</a>':"") + '</td>' +
-          '</tr>';
-          //if the curDay day value is different from the (event starting day + curTime offsite) day value then we update curday value and it's a new day.
-          /*
-          if( moment(curDay, "YYYY-MM-DD").format('DD') !== moment((moment(row.event_date)+curTime)).format('DD-MM-YY').substring(0,2)){
-            curDay = moment((moment(row.event_date)+curTime)).format('YYYY-MM-DD');
-            newDay = true;
-          }
-          */
-        }
-        //newDay = true;
-      }
-    },
 
+
+
+
+    onReload(){
+      curTime = 0
+      if(this.schedule[0] !== undefined) {
+        this.eventTitle = "<h5>Agenda <span class='fw-semi-bold'>do Evento " + this.schedule[0].event_name + "</span></h5>";
+      }else{
+        this.eventTitle = "<h5>Agenda <span class='fw-semi-bold'>do Evento</span></h5>";
+      }
+      console.log('reloading page');
+    }
   },
   computed: {
     ...mapState('layout', {
       permissions: state => state.permissions,
       curReq: state => state.curReq,
-      schedule: state => state.schedule,
     }),
-  },
-  created(){
-    const wsPayload = {"endpoint":"getEventSchedule", "id":this.curReq};
-    this.$store.commit('layout/SOCKET_SEND', wsPayload);
-  },
-  watch:{
-    tempSchedule: function(){
-      for(let val in this.tempSchedule){
-        this.tempSchedule[val].order = Number(val) + 1;
+    schedule: {
+      get() {
+          return this.$store.state.layout.schedule;
+      },
+      set(value) {
+          this.$store.commit('layout/updateScheduleList', value)
       }
-    },
-    schedule: function(){
-      console.log('schedule mudou');
     }
   },
   components:{
     Widget,
-    draggable,
-  }
+    draggable
+  },
 };
 </script>
 
