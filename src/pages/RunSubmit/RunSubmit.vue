@@ -12,7 +12,7 @@
             <b-alert class="alert-sm" variant="danger" :show="!!errorMessage">
               {{errorMessage}}
             </b-alert>
-
+            <!-- Autocomplete Input -->
             <b-form-row>
               <b-col cols="6">
                 <b-form-group label="Nome do jogo" label-for="gameName">
@@ -42,6 +42,7 @@
                   </div>
                 </b-form-group>
               </b-col>
+
               <b-col cols="6">
                 <b-form-group label="Ano de Lançamento" label-for="gameYear">
                   <b-input-group>
@@ -97,24 +98,8 @@
               </b-col>
             </b-form-row>
 
-
             <b-form-row>
               <b-col cols="6">
-
-<!--
-                <b-form-group label="Intervalo" label-for="timeSlot">
-                  <b-input-group>
-                    <input id="timeSlot"
-                          v-model="form.timeSlot" 
-                          ref="timeSlot"
-                          class="form-control input-transparent pl-3"
-                          type="text"
-                          required
-                          placeholder=""/>
-                  </b-input-group>
-                  <small>Informar o intervalo de tempo preferido para realização da run (manhã, tarde, noite ou madrugada).</small>
-                </b-form-group>
--->
                 <b-form-group label="Intervalo" v-slot="{ ariaDescribedby }">
                   <b-form-checkbox-group
                     id="checkbox-group"
@@ -123,8 +108,8 @@
                     :aria-describedby="ariaDescribedby"
                   ></b-form-checkbox-group>
                 </b-form-group>
-
               </b-col>
+
               <b-col cols="6">
                 <b-form-group label="Plataforma" label-for="platform">
                   <b-input-group>
@@ -141,7 +126,61 @@
               </b-col>
             </b-form-row>
 
+            <!-- Incentives -->
             <b-form-row>
+              <b-button variant="dark" class="auth-btn" size="sm" @click="showIncentives">
+                <span class="auth-btn-circle">
+                  <i v-if="toggleIncentives" class="la la-caret-right"></i>
+                  <i v-else class="la la-caret-down"></i>
+                </span>
+                Adicionar incentivos
+              </b-button>
+            </b-form-row>
+
+            <div id='incentives' v-show="toggleIncentives" style="margin-top: 10px">                
+              
+              <b-form-row>
+                <button type="button" class="btn btn-default" @click="minusIncentive" style="margin-left: 6px">
+                  <span class="glyphicon glyphicon-minus"></span>
+                </button>
+
+                <button type="button" class="btn btn-default" @click="plusIncentive" style="margin-left: 10px">
+                  <span class="glyphicon glyphicon-plus"></span>
+                </button>
+              </b-form-row>
+
+
+              <!-- Incentives rows -->
+              <b-form-row v-for="(incentive, idx) in form.incentives" :key="idx">
+                <b-col cols="6">
+                  <b-form-group :label="'Tipo do incentivo nº '+(idx+1)" :label-for="'type-'+idx">
+                    <b-input-group>
+                      <input :id="'type-'+idx"
+                            v-model="form.incentives[idx].type" 
+                            :ref="'type-'+idx"
+                            class="form-control input-transparent pl-3"
+                            type="text"
+                            placeholder=""/>
+                    </b-input-group>
+                  </b-form-group>
+                </b-col>
+
+                <b-col cols="6">
+                  <b-form-group label="Comentário" :label-for="'comment-'+idx">
+                    <b-input-group>
+                      <input :id="'comment-'+idx"
+                            v-model="form.incentives[idx].comment" 
+                            :ref="'comment-'+idx"
+                            class="form-control input-transparent pl-3"
+                            type="text"
+                            placeholder=""/>
+                    </b-input-group>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+            </div>
+
+            <b-form-row style="margin-top: 20px">
               <small>*Não encontrou seu jogo na lista? Nos informe seu nome e ano de lançamento para adicionarmos!</small>
             </b-form-row>
             
@@ -169,13 +208,19 @@ export default {
   name: 'RunSubmit',
   data() {
     return {
+      //Submit Error Message
       errorMessage: null,
 
+      //Autocomplete Variables
       items: [],
       isOpen: false,
       results: [],
       arrowCounter: -1,
 
+      //Incentives Variables
+      toggleIncentives: false,
+
+      //Time Slot Checkbox Components
       timeSlots: [],
       timeSlotOptions: [
         { text: 'Manhã', value: 'manha' },
@@ -183,6 +228,8 @@ export default {
         { text: 'Noite', value: 'noite' },
         { text: 'Madrugada', value: 'madrugada' }
       ],
+
+      //Variables that will be submitted on form
       form: {
         category: '',
         estimatedTime: '',
@@ -191,12 +238,20 @@ export default {
 
         gameId: null,
         gameName: '',
-        gameYear: ''
+        gameYear: '',
+
+        incentives: [
+          {
+            type: '',
+            comment: '',
+          },
+        ]
       },
+      
+      //Variables for input validation
       errors: {
         category: null,
         estimatedTime: null,
-        timeSlot: null,
         platform: null,
 
         gameId: null,
@@ -206,21 +261,13 @@ export default {
     }
   },
   methods: {
-    //automcompletemethods
+    //Autocomplete Methods
     handleClickOutside(evt) {
       if(evt.target.id !== "gameName"){
         this.isOpen = false;
         this.arrowCounter = -1;
       }
     },
-    /*
-    handleFocus(evt){
-      if(evt.path[0].id === "gameName"){
-        this.isOpen = false;
-        this.arrowCounter = -1;
-      }
-    },
-    */
     onArrowDown() {
       if (this.arrowCounter < this.results.length) {
         this.arrowCounter = this.arrowCounter + 1;
@@ -254,10 +301,9 @@ export default {
         this.form.gameName = result;
         this.isOpen = false;
     },
-    //submit request methods
-    async submit() {
 
-      console.log(this.form.timeSlot);
+    //Submit Request Methods
+    async submit() {
       if(this.inputValidation()){
         let formatTime = this.form.estimatedTime.split(':');
         let estimatedSeconds = 0;
@@ -292,7 +338,9 @@ export default {
             "category": this.form.category, 
             "estimated_time": estimatedSeconds, 
             "preferred_time_slot": this.form.timeSlot,
-            "platform": this.form.platform
+            "platform": this.form.platform,
+            
+            "incentives": []
             }
           };
         }else{
@@ -306,10 +354,18 @@ export default {
 
             "name": this.form.gameName,
             "year":this.form.gameYear,
+
+            "incentives": []
             }
           };
-        }        
-        await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+        }
+
+        for(let idx in this.form.incentives){
+          if(this.form.incentives[idx].type && this.form.incentives[idx].comment){
+            wsPayload.info.incentives.push(this.form.incentives[idx]);
+          }
+        }
+        this.$store.commit('layout/SOCKET_SEND', wsPayload);
         this.form.gameId = null;
         this.$router.push('/app/dashboard');
       }
@@ -343,6 +399,17 @@ export default {
         }
       }
       return validationCheck;
+    },
+
+    //Incentive Creation Methods
+    showIncentives(){
+      this.toggleIncentives = !this.toggleIncentives;
+    },
+    minusIncentive(){
+      this.form.incentives.splice(this.form.incentives.length-1, 1);
+    },
+    plusIncentive(){
+      this.form.incentives.push({type: '', comment: ''});
     }
   },
   computed:{
@@ -354,18 +421,16 @@ export default {
   },
   async created(){
     const wsPayload = {"endpoint":"getGames", "id":this.curReq, "info":{}};
-    await this.$store.commit('layout/SOCKET_SEND', wsPayload);
+    this.$store.commit('layout/SOCKET_SEND', wsPayload);
     for(let game in this.gamesList){
       this.items.push(this.gamesList[game].name);
     }
   },
   mounted(){
     document.addEventListener('click', this.handleClickOutside);
-    //document.addEventListener('focusout', this.handleFocus);
   },
   destroyed() {
     document.removeEventListener('click', this.handleClickOutside);
-    //document.removeEventListener('focusout', this.handleFocus);
   }
 };
 </script>

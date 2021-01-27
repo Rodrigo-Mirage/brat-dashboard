@@ -80,7 +80,7 @@
                     -->
                     <input
                       :value=formatInterval(row.duration)
-                      @input="toSeconds($event.target.value)"
+                      @input="row.duration = toSeconds($event.target.value)"
                       ref="duration"
                       class="form-control input-transparent pl-3"
                       type="time"
@@ -169,7 +169,6 @@ export default {
       }else{
         resp += ":00"
       }
-      console.log(resp);
       return resp;
     },
     formatHorary(date, duration, extra){
@@ -179,7 +178,6 @@ export default {
       return moment(resp).format('HH:mm:ss [de] DD/MM/YYYY');
     },
     toSeconds(time){
-      console.log('on input: ', time);
       let resp = time.split(':');
       resp = (resp[0] ? Number(resp[0])*3600 : 0) + (resp[1] ? Number(resp[1])*60 : 0) + (resp[2] ? Number(resp[2]) : 0);
       //TODO
