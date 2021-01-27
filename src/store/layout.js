@@ -99,6 +99,15 @@ export default {
       }
       state.schedule = payload;
     },
+    //Setter
+    updateScheduleList(state, payload){
+      //console.log("antes: ", state.schedule);
+      //console.log("depois: ", payload);
+      for(let val in payload){
+        payload[val].order = Number(val) + 1;
+      }
+      state.schedule = payload;
+    },
     SOCKET_SEND(state, message){
       console.log('message sent: ' + message);
       state.curReq++;
@@ -181,4 +190,9 @@ export default {
       commit('logout');
     }
   },
+  getters: {
+    schedule: state => {
+      return state.schedule;
+    }
+  }
 };

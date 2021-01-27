@@ -25,6 +25,16 @@ export default function websocket(){
           case "getEventSchedule":
             store.commit('layout/listSchedule', payload.data);
             break;
+          //Schedule communication
+          case "updateEventSchedule":
+            store.commit('layout/updateScheduleList', payload.data[0].success);
+            break;
+          case "createSetupEventSchedule":
+            store.commit('layout/updateScheduleList', payload.data[0].success);
+            break;
+          case "deleteEventSchedule":
+            store.commit('layout/updateScheduleList', payload.data[0].success);
+            break;
           default:
             console.log("Mensagem do servidor: ", payload);
             //store.commit('receiveData', payload);
