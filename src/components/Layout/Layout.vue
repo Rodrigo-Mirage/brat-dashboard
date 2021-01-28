@@ -8,7 +8,7 @@
     </transition>
   </div>
   <footer class="contentFooter">
-    Light Blue Vue Admin Dashboard Template - Made by <a href="https://flatlogic.com" target="_blank">Flatlogic</a>
+    Light Blue Admin Theme by <a href="https://flatlogic.com" target="_blank">Flatlogic</a>, Dashboard developed by Jewel Systems
   </footer>
 </div>
 </template>

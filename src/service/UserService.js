@@ -18,6 +18,19 @@ export default {
       facebook: facebook,
       instagram: instagram,
       youtube: youtube,
+    }).catch(function (error) {
+      if (error.response) {
+        return error.response
+      }
+      /*
+      else if (error.request) {
+        // The request was made but no response was received
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error', error.message);
+      }
+      */
     });
     return response;
   },

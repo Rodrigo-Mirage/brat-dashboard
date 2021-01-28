@@ -68,16 +68,6 @@
                   
                   <td v-if="row.type !== 'setup'"> {{ formatInterval(row.duration) }}</td>
                   <td v-else>
-                    <!--
-                    <input
-                    :value=formatInterval(row.duration)
-                    @input="row.duration = toSeconds($event.target.value)"
-                    ref="duration"
-                    class="form-control input-transparent pl-3"
-                    type="time"
-                    step='1'
-                    />
-                    -->
                     <input
                       :value=formatInterval(row.duration)
                       @input="row.duration = toSeconds($event.target.value)"
@@ -181,7 +171,6 @@ export default {
       let resp = time.split(':');
       resp = (resp[0] ? Number(resp[0])*3600 : 0) + (resp[1] ? Number(resp[1])*60 : 0) + (resp[2] ? Number(resp[2]) : 0);
       //TODO
-      console.log('resp: ', resp);
       return resp;
     },
     translateInterval(interval){
@@ -307,7 +296,7 @@ export default {
 
 
 
-
+    //Triggered on Reload
     onReload(){
       curTime = 0
       if(this.schedule[0] !== undefined) {

@@ -34,7 +34,7 @@
             </b-input-group>
           </b-form-group>
           <div class="bg-widget auth-widget-footer">
-            <b-button type="submit" variant="danger" class="auth-btn" size="sm">
+            <b-button type="submit" variant="primary" class="auth-btn" size="sm">
               <span class="auth-btn-circle">
                 <i class="la la-caret-right"></i>
               </span>
@@ -61,7 +61,7 @@
       </Widget>
     </b-container>
     <footer class="auth-footer">
-      Light Blue Vue Admin Dashboard Template - Made by <a href="https://flatlogic.com" target="_blank">Flatlogic</a>
+      Light Blue Admin Theme by <a href="https://flatlogic.com" target="_blank">Flatlogic</a>, Dashboard developed by Jewel Systems
     </footer>
   </div>
 </template>
@@ -78,8 +78,13 @@ export default {
   data() {
     return {
       form:{
+        /*
         username: 'admin',
         password: '12345678',
+        */
+        
+        username: '',
+        password: '',
       },
       errorMessage: null,
     };
@@ -95,25 +100,27 @@ export default {
       const validatePword = this.form.password.length >= 8;
 
       if(!validateUsername){
-        this.errorMessage = "Usuário inválido";
+        this.errorMessage = "Por favor, preecha seu nome de usuário.";
         if(!validatePword){
-          this.errorMessage = "Usuário e senha inválidos";
+          this.errorMessage = "Por favor, preencha os campos abaixo.";
         }
       }
       else if(!validatePword){
-        this.errorMessage = "Senha inválida"
+        this.errorMessage = "Por favor, preencha sua senha."
       }else{
         //HTTP Login
         const payload = {username: this.form.username, password: this.form.password}
         await this.$store.dispatch('layout/authLogin', payload);
 
-        //WS Login
-        //this.$store.dispatch('createWS');
-        const wsPayload = {"endpoint":"login", "id":this.curReq, "info":{"token": this.authToken}};
-        await this.$store.commit('layout/SOCKET_SEND', wsPayload);
-        
-        if(this.authenticate === null || this.authenticate === undefined){
-          this.errorMessage = "Usuário não existe"
+        console.log("chegamos: ", this.authError);
+
+        if(this.authError){
+          this.errorMessage = "Senha incorreta";
+        }else{
+          //WS Login
+          //this.$store.dispatch('createWS');
+          const wsPayload = {"endpoint":"login", "id":this.curReq, "info":{"token": this.authToken}};
+          this.$store.commit('layout/SOCKET_SEND', wsPayload);
         }
       }
     },
@@ -123,6 +130,7 @@ export default {
       authToken: state => state.authToken,
       authenticate: state => state.authenticate,
       curReq: state => state.curReq,
+      authError: state =>state.authError
     }),
   },
 };

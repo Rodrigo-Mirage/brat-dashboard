@@ -12,6 +12,7 @@ export default {
     authToken: null,
     authenticate: false,
     wsState: 3,
+    authError: null,
 
     //information arrays
     userList: [],
@@ -51,6 +52,9 @@ export default {
     },
     authLogin(state, token){
       state.authToken = token;
+    },
+    authError(state, error){
+      state.authError = error;
     },
     loadUser(state, {id, first_name, last_name, username, email, gender, phone_number, stream_link, twitch, twitter, facebook, instagram, youtube, permissions}){
       state.id = id;
@@ -155,13 +159,18 @@ export default {
     },
     async authLogin({ commit, dispatch }, payload){
       const response = await AuthService.postLogin(payload.username, payload.password);
-      const token = response.data.token;
-      if(token){
-        window.localStorage.setItem('authenticated', true);
-        window.localStorage.setItem('curUser', response.data.id);
-        window.localStorage.setItem('token', token);
-        commit('authLogin', token);
-        await dispatch('loadUser', response.data.id);
+      commit('authError', null)
+      if(response.data.error){
+        commit('authError', response.data.error)
+      }else{
+        const token = response.data.token;
+        if(token){
+          window.localStorage.setItem('authenticated', true);
+          window.localStorage.setItem('curUser', response.data.id);
+          window.localStorage.setItem('token', token);
+          commit('authLogin', token);
+          await dispatch('loadUser', response.data.id);
+        }
       }
     },
     async loadUser({ commit }, id){

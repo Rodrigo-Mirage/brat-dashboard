@@ -4,7 +4,7 @@
     :class="{sidebar: true}"
   >
     <header class="logo">
-      <router-link to="/app">Light <span class="fw-semi-bold">Blue</span></router-link>
+      <router-link to="">BrAT <span class="fw-semi-bold">Speedruns</span></router-link>
     </header>
     <ul class="nav">
       <NavLink

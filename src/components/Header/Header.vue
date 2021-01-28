@@ -7,10 +7,13 @@
               <img class="rounded-circle" src="../../assets/people/a5.jpg" alt="..." />
             </span>
             <span class="small">{{this.first_name}} {{this.last_name}}</span>
+            <!--
             <span class="mx-2 circle bg-primary text-white fs-sm fw-bold">13</span>
+            -->
           </template>
-          <notifications />
+          <!-- <notifications /> -->
         </b-nav-item-dropdown>
+        <!--
         <b-nav-item-dropdown class="d-md-down-none" no-caret right menu-class="dropdown-menu-messages">
           <template slot="button-content">
             <i class="la la-comment px-2" />
@@ -46,11 +49,14 @@
             <span class="mx-auto">See all messages <i class="fa fa-arrow-right ml-1"></i></span>
           </b-dropdown-item-button>
         </b-nav-item-dropdown>
+        -->
         <b-nav-item class="divider d-md-down-none"></b-nav-item>
+
         <b-nav-item-dropdown no-caret right menu-class="dropdown-menu-settings">
           <template slot="button-content">
             <i class="la la-cog px-2" />
           </template>
+          <!--
           <b-dropdown-item><i class="la la-user" /> My Account</b-dropdown-item>
           <b-dropdown-divider />
           <b-dropdown-item>Calendar</b-dropdown-item>
@@ -61,7 +67,11 @@
           <b-dropdown-item-button @click="logout">
             <i class="la la-sign-out" /> Log Out
           </b-dropdown-item-button>
+          -->
+          <b-dropdown-item>TODO</b-dropdown-item>
         </b-nav-item-dropdown>
+
+        <!--
         <b-nav-item-dropdown no-caret right class="d-md-down-none">
           <template slot="button-content">
             <i class="la la-globe px-2" />
@@ -90,6 +100,7 @@
             See all tickets <i class="fa fa-arrow-right ml-1"></i>
           </b-dropdown-item-button>
         </b-nav-item-dropdown>
+        -->
         <b-nav-item class="d-md-down-none" @click="logout">
           <i class="la la-power-off px-2" />
         </b-nav-item>
@@ -102,11 +113,13 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import Notifications from '@/components/Notifications/Notifications';
+//import Notifications from '@/components/Notifications/Notifications';
 
 export default {
   name: 'Header',
-  components: { Notifications },
+  components: { 
+    //Notifications 
+    },
   data() {
     return {
       showNavbarAlert: true
