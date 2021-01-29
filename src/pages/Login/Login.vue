@@ -112,8 +112,6 @@ export default {
         const payload = {username: this.form.username, password: this.form.password}
         await this.$store.dispatch('layout/authLogin', payload);
 
-        console.log("chegamos: ", this.authError);
-
         if(this.authError){
           this.errorMessage = "Senha incorreta";
         }else{

@@ -21,6 +21,7 @@ export default {
     extrasList: [],
     userRuns: [],
     schedule: [],
+    submittedRuns: [],
 
     //current user
     id:'',
@@ -94,6 +95,15 @@ export default {
     listSchedule(state, payload){
       state.schedule = payload[0];
     },
+    //Submit Runs
+    listSubmitRuns(state, payload){
+      state.submittedRuns = payload[0];
+    },
+    updateSubmitRun(state, payload){
+      state.submittedRuns.filter(element => element.id === payload[0].id)[0].reviewed = payload[0].reviewed;
+      state.submittedRuns.filter(element => element.id === payload[0].id)[0].approved = payload[0].approved;
+      state.submittedRuns.filter(element => element.id === payload[0].id)[0].waiting = payload[0].waiting;
+    },
     updateSchedule(state, payload){
       //console.log("diff", state.schedule.filter(({ id: id1 }) => !payload.some(({ id: id2 }) => id2 === id1)))
       //console.log("payload:", payload);
@@ -144,6 +154,7 @@ export default {
       state.extrasList = [];
       state.userRuns = [];
       state.schedule = [];
+      state.submittedRuns = [];
       router.push('/login');
     },
     wsState(state, curState){

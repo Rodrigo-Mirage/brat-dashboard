@@ -44,6 +44,8 @@
       </b-col>
     </b-row>
 
+    <SubmittedRuns/>
+
     <b-row>
       <b-col>
         <Widget
@@ -96,6 +98,7 @@
 <script>
 import Widget from '@/components/Widget/Widget';
 import Schedule from './components/Schedule';
+import SubmittedRuns from './components/SubmittedRuns'
 import { mapState } from 'vuex';
 const moment = require('moment');
 export default {
@@ -168,7 +171,8 @@ export default {
   },
   components:{
     Widget,
-    Schedule
+    Schedule,
+    SubmittedRuns
   }
 };
 </script>

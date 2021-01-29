@@ -25,6 +25,13 @@ export default function websocket(){
           case "getEventSchedule":
             store.commit('layout/listSchedule', payload.data);
             break;
+          //SubmitRun
+          case "getSubmitRuns":
+            store.commit('layout/listSubmitRuns', payload.data);
+            break;
+          case "updateSubmitRun":
+            store.commit('layout/updateSubmitRun', payload.data);
+            break;
           //Schedule communication
           case "updateEventSchedule":
             store.commit('layout/updateScheduleList', payload.data[0].success);
