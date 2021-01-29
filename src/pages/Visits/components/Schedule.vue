@@ -34,8 +34,69 @@
               <p class="my-4">Tem certeza que deseja removar os tempos de setup? </p>
           </b-modal>
 
+          <b-modal 
+            id='add-setup' 
+            title="Adicionar tempo de setup"
+            centered
+            ok-variant="dark"
+            cancel-variant="dark"
+            ok-title="Confirmar"
+            cancel-title="Cancelar"
+            @ok="confirmAddSetup">
+            <p class="my-4">Escolha a duração do tempo de setup que será adicionado no agendamento.</p>
+            <b-form-group label="" label-for="estimatedTime">
+              <b-input-group>
+                <input id="setupTime"
+                      v-model="setupTime" 
+                      v-bind:class="{ invalid: toSeconds(setupTime) < 1 }"
+                      ref="setupTime"
+                      class="form-control input-transparent pl-3"
+                      type="time"
+                      required
+                      step='1'
+                      min="00:00:00" max="24:00:00"
+                      />
+              </b-input-group>
+              <small v-show="toSeconds(setupTime) < 1" class="errormsg"> Por favor, insira um valor válido. </small>
+            </b-form-group>
+          </b-modal>
+
+          <b-modal 
+            id='add-setups' 
+            title="Adicionar tempos de setup"
+            centered
+            ok-variant="dark"
+            cancel-variant="dark"
+            ok-title="Confirmar"
+            cancel-title="Cancelar"
+            @ok="confirmAddSetups">
+            <p class="my-4">Escolha a duração dos tempos de setup que serão adicionados.</p>
+            <b-form-group label="" label-for="estimatedTime">
+              <b-input-group>
+                <input id="setupTime"
+                      v-model="setupTime" 
+                      v-bind:class="{ invalid: toSeconds(setupTime) < 1 }"
+                      ref="setupTime"
+                      class="form-control input-transparent pl-3"
+                      type="time"
+                      required
+                      step='1'
+                      min="00:00:00" max="24:00:00"
+                      />
+              </b-input-group>
+              <small v-show="toSeconds(setupTime) < 1" class="errormsg"> Por favor, insira um valor válido. </small>
+            </b-form-group>
+            <p class="my-4">Ao confirmar, um tempo de setup será adicionado antes de todos os agendamentos.</p>
+          </b-modal>
+
         <!-- Schedule Creator -->
           <div class="table-resposive">
+            <div class="clearfix">
+              <div class="float-right">
+                <b-button @click="toggleDrag" variant="dark" v-if="dragEnabled">Desativar edição</b-button>
+                <b-button @click="toggleDrag" variant="dark" v-else>Ativar edição</b-button>
+              </div>
+            </div>
             <table class="table" v-if="schedule.length !== 0">
               <thead>
                 <tr>
@@ -54,6 +115,7 @@
                 </tr>
               </thead>
               <draggable 
+                :disabled="!dragEnabled"
                 v-model="schedule" 
                 tag="tbody"
                 ghost-class="ghost"
@@ -61,12 +123,12 @@
                 animation='100'
               >
                 <tr v-for="(row, idx) in schedule" :key="idx" class="dnd-item">
-                  <td class="dnd-handle"> <i class="fa fa-align-justify handle"></i> </td>
+                  <td v-if="dragEnabled" class="dnd-handle"> <i class="fa fa-align-justify handle"></i> </td>
+                  <td v-else></td>
                   <td> {{ row.id }}</td>
                   <td> {{ formatHorary(row.event_date, row.duration, row.extra_time) }}</td>
                   <td> {{ row.game }} {{ row.order }}</td>
-                  
-                  <td v-if="row.type !== 'setup'"> {{ formatInterval(row.duration) }}</td>
+                  <td v-if="row.type !== 'setup' || !dragEnabled"> {{ formatInterval(row.duration) }}</td>
                   <td v-else>
                     <input
                       :value=formatInterval(row.duration)
@@ -77,55 +139,24 @@
                       step='1'
                     />
                   </td>
-
                   <td> {{ formatInterval(row.extra_time) }}</td>
                   <td> {{ (row.category ? row.category:"") }}</td>
-
                   <td> {{ (row.interval ? translateInterval(row.interval):"") }} </td>
-
                   <td> {{ (row.platform ? row.platform:"") }}</td>
-
                   <td v-if="row.stream_link"><a :href=row.stream_link> {{ row.runner }} </a></td>
                   <td v-else> {{ row.runner }} </td>
-
-                  
-                  <td v-if="row.type !== 'setup'"> <b-button @click="addSetup(idx)" variant="dark">Adicionar setup</b-button> </td>
+                  <td v-show="dragEnabled" v-if="row.type !== 'setup'"> <b-button @click="addSetup(idx)" variant="dark">Adicionar setup</b-button> </td>
                   <td v-else> </td>
-
-                  <td> <i class="fa fa-times close" @click="removeAt(row.order-1)"></i> </td>
+                  <td v-show="dragEnabled"><i class="fa fa-times close" @click="removeAt(row.order-1)"></i> </td>
                 </tr>
               </draggable>
             </table>
             <div v-else>A agenda está vazia!</div>
             <div class="clearfix">
-                <b-row>
-                  <b-col cols="7"></b-col>
-
-                  <b-col cols="2">
-                    <b-button @click="removeSetups" variant="dark">Remover tempos de setup</b-button>
-                  </b-col>
-
-                  <b-col cols="1">
-                    <b-form-group label="" label-for="estimatedTime">
-                      <b-input-group>
-                        <input id="setupTime"
-                              v-model="setupTime" 
-                              ref="setupTime"
-                              class="form-control input-transparent pl-3"
-                              type="time"
-                              required
-                              step='1'
-                              min="00:00:00" max="24:00:00"
-                              />
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-
-                  <b-col cols="2">
-                    <b-button @click="addSetups" variant="dark">Adicionar tempos de setup</b-button>
-                  </b-col>
-
-                </b-row>
+              <div class="float-right">
+                <b-button v-show="dragEnabled" @click="removeSetups" variant="dark" style="margin-right: 10px">Remover tempos de setup</b-button>
+                <b-button v-show="dragEnabled" @click="addSetups" variant="dark">Adicionar tempos de setup</b-button>
+              </div>
             </div>
           </div>
         </Widget>
@@ -147,8 +178,10 @@ export default {
       dragging: false,
       eventTitle: '',
       removeIdx: -1,
+      addIdx: -1,
 
-      setupTime: '00:00:00',
+      setupTime: '00:10:00',
+      dragEnabled: true,
     }
   },
   created(){
@@ -259,12 +292,23 @@ export default {
       await this.createSchedule(setups);
     },
     addSetup(idx){
+      this.addIdx = idx;
       if(!(this.schedule[idx-1] && this.schedule[idx-1].type === 'setup') ){
-        this.createSetup(idx);
+        this.$bvModal.show('add-setup');
+      }
+    },
+    confirmAddSetup(){
+      if(this.toSeconds(this.setupTime) > 0){
+        this.createSetup(this.addIdx);
       }
     },
     addSetups(){
-      this.createSetup(-1);
+      this.$bvModal.show('add-setups');
+    },
+    confirmAddSetups(){
+      if(this.toSeconds(this.setupTime) > 0){
+        this.createSetup(-1);
+      }
     },
     //Schedule Remove
     removeSetups(){
@@ -319,9 +363,6 @@ export default {
       const wsPayload = {"endpoint":"deleteEventSchedule", "id":this.curReq, "info":{ "id": this.schedule[idx].id }};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
     },
-
-
-
     //Triggered on Reload
     onReload(){
       curTime = 0
@@ -331,6 +372,10 @@ export default {
         this.eventTitle = "<h5>Agenda <span class='fw-semi-bold'>do Evento</span></h5>";
       }
       console.log('reloading page');
+    },
+    //Toggle Drag and Drop
+    toggleDrag(){
+      this.dragEnabled = !this.dragEnabled;
     }
   },
   computed: {
@@ -362,5 +407,15 @@ export default {
 
 .dnd-handle {
   cursor: move;
+}
+
+input.invalid{
+  border-color: #800000;
+  border-width: 3px;
+  z-index: 3;
+}
+
+.errormsg {
+  color: red
 }
 </style>
