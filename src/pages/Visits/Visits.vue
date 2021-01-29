@@ -3,7 +3,7 @@
     <h1 class="page-title">Dashboard &nbsp;
       <small>
         <p v-if="this.permissions.includes('Admin')">Admin</p>
-        <p v-else>User</p>
+        <p v-else>Runner</p>
       </small>
     </h1>
 

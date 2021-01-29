@@ -99,8 +99,25 @@
             <div v-else>A agenda está vazia!</div>
             <div class="clearfix">
               <div class="float-right">
-                <b-button style="margin-right: 5px" @click="removeSetups" variant="dark">Remover tempos de setup</b-button>
-                <b-button @click="addSetups" variant="dark">Adicionar tempos de setup</b-button>
+                <b-row>
+                  <b-button style="margin-right: 5px" @click="removeSetups" variant="dark">Remover tempos de setup</b-button>
+
+                  <b-form-group label="" label-for="estimatedTime">
+                    <b-input-group>
+                      <input id="setupTime"
+                            v-model="setupTime" 
+                            ref="setupTime"
+                            class="form-control input-transparent pl-3"
+                            type="time"
+                            required
+                            step='1'
+                            min="00:00:00" max="24:00:00"
+                            />
+                    </b-input-group>
+                  </b-form-group>
+
+                  <b-button @click="addSetups" variant="dark">Adicionar tempos de setup</b-button>
+                </b-row>
               </div>
             </div>
           </div>
@@ -123,6 +140,8 @@ export default {
       dragging: false,
       eventTitle: '',
       removeIdx: -1,
+
+      setupTime: '00:00:00',
     }
   },
   created(){

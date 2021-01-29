@@ -8,7 +8,7 @@
         <form autocomplete="off" novalidate class="mt" @submit.prevent="submit">
 
           <b-form-group label="" label-for="first_name">
-            <b-input-group class="input-wrapper invalid">
+            <b-input-group>
               <b-input-group-text slot="prepend"><i class="la la-user text-white"></i></b-input-group-text>
               <input id="first_name"
                      v-model="form.first_name" 
@@ -231,7 +231,6 @@
             </b-input-group>
             <small v-show="errors.facebook" class="errormsg"> {{ errors.facebook ? errors.facebook.split(": ")[1] : "" }} </small>
           </b-form-group>
-          
 
           <b-form-group label="" label-for="instagram">
             <b-input-group>
@@ -299,7 +298,6 @@ export default {
         { text: 'Outro', value: 'O' }
       ],
       form:{ 
-        
         first_name: 'Vitor',
         last_name: 'Hardoim',
         username: 'vitorch',
@@ -316,7 +314,6 @@ export default {
         facebook: 'https://www.facebook.com/Stoneyoda/',
         instagram: 'https://www.instagram.com/stonedyoda/?hl=pt-br',
         youtube: 'https://www.youtube.com/channel/UCuhVlANZXUATGv1dRmwcUzA',
-        
        /*
         first_name: '',
         last_name: '',
@@ -492,8 +489,6 @@ input.invalid{
 .errormsg {
   color: red
 }
-
-.input-wrapper { position: relative; }
 
 
 </style>

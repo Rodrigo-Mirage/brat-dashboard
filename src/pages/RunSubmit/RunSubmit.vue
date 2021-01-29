@@ -9,9 +9,7 @@
           customHeader
         >
           <form novalidate class="mt" @submit.prevent="submit">
-            <b-alert class="alert-sm" variant="danger" :show="!!errorMessage">
-              {{errorMessage}}
-            </b-alert>
+            <div id="error-block" v-show="errorMessage"></div>
             <!-- Autocomplete Input -->
             <b-form-row>
               <b-col cols="6">
@@ -23,6 +21,7 @@
                         type="text"
                         ref="gameName"
                         v-model="form.gameName"
+                        v-bind:class="{ invalid: errors.gameName !== null }"
                         @input="onChange"
                         @keydown.down="onArrowDown"
                         @keydown.up="onArrowUp"
@@ -40,6 +39,7 @@
                       </li>
                     </ul>
                   </div>
+                  <small v-show="errors.gameName" class="errormsg"> {{ errors.gameName ? errors.gameName.split(":")[1] : "" }} <br></small>
                 </b-form-group>
               </b-col>
 
@@ -48,12 +48,14 @@
                   <b-input-group>
                     <input id="gameYear"
                           v-model="form.gameYear" 
+                          v-bind:class="{ invalid: errors.gameYear !== null }"
                           ref="gameYear"
                           class="form-control input-transparent pl-3"
                           type="text"
                           required
                           placeholder=""/>
-                  </b-input-group>
+                    </b-input-group>
+                  <small v-show="errors.gameYear" class="errormsg"> {{ errors.gameYear ? errors.gameYear.split(":")[1] : "" }} <br></small>
                   <small>Informar o ano de lançamento do jogo.</small>
                 </b-form-group>
               </b-col>
@@ -65,12 +67,14 @@
                   <b-input-group>
                     <input id="category"
                           v-model="form.category" 
+                          v-bind:class="{ invalid: errors.category !== null }"
                           ref="category"
                           class="form-control input-transparent pl-3"
                           type="text"
                           required
                           placeholder=""/>
                   </b-input-group>
+                  <small v-show="errors.category" class="errormsg"> {{ errors.category ? errors.category.split(":")[1] : "" }} <br></small>
                   <small>Indique a categoria que você pode fazer (ex: 100%, Any%).</small>
                 </b-form-group>
               </b-col>
@@ -79,6 +83,7 @@
                   <b-input-group>
                     <input id="estimatedTime"
                           v-model="form.estimatedTime" 
+                          v-bind:class="{ invalid: errors.estimatedTime !== null }"
                           ref="estimatedTime"
                           class="form-control input-transparent pl-3"
                           type="time"
@@ -88,6 +93,7 @@
                           min="00:00:00" max="24:00:00"
                           />
                   </b-input-group>
+                  <small v-show="errors.estimatedTime" class="errormsg"> {{ errors.estimatedTime ? errors.estimatedTime.split(":")[1] : "" }} <br></small>
                   <small>
                     Coloque o tempo limite que será necessário para completar a categoria (hh:mm:ss). 
                     Lembre que Personal Best é diferente de Tempo Estimado. 
@@ -106,7 +112,9 @@
                     v-model="timeSlots"
                     :options="timeSlotOptions"
                     :aria-describedby="ariaDescribedby"
-                  ></b-form-checkbox-group>
+                  >
+                  </b-form-checkbox-group>
+                  <small>Informar sua disponibilidade de horário.</small>
                 </b-form-group>
               </b-col>
 
@@ -115,12 +123,14 @@
                   <b-input-group>
                     <input id="platform"
                           v-model="form.platform" 
+                          v-bind:class="{ invalid: errors.platform !== null }"
                           ref="platform"
                           class="form-control input-transparent pl-3"
                           type="text"
                           required
                           placeholder=""/>
                   </b-input-group>
+                <small v-show="errors.platform" class="errormsg"> {{ errors.platform ? errors.platform.split(":")[1] : "" }} <br></small>
                 <small>Informar a plataforma que você usará para jogar o jogo(como PS4, PC, Switch).</small>
                 </b-form-group>
               </b-col>
@@ -221,7 +231,7 @@ export default {
       toggleIncentives: false,
 
       //Time Slot Checkbox Components
-      timeSlots: [],
+      timeSlots: ['manha'],
       timeSlotOptions: [
         { text: 'Manhã', value: 'manha' },
         { text: 'Tarde', value: 'tarde' },
@@ -372,6 +382,11 @@ export default {
     },
     inputValidation(){
       let validationCheck = true;
+
+      for(let element in this.errors){
+        this.errors[element] = null;
+      }
+
       if(!this.form.gameName || /^\s*$/.test(this.form.gameName)) {
         this.errors.gameName = 'Nome do jogo: Campo obrigatório';
         validationCheck = false
@@ -392,11 +407,13 @@ export default {
         this.errors.platform = 'Plataforma: Campo obrigatório';
         validationCheck = false
       }
+
       if (!validationCheck){
         this.errorMessage = 'Os seguintes campos estão inválidos: ';
         for(let error in this.errors){
-          if(this.errors[error]) this.errorMessage = this.errorMessage + this.errors[error];
+          if(this.errors[error]) this.errorMessage = this.errorMessage + `<br><small><i class="fa fa-circle"></i></small> ` + this.errors[error];
         }
+        document.getElementById('error-block').innerHTML = `<div role="alert" aria-live="polite" aria-atomic="true" class="alert alert-sm alert-danger">${this.errorMessage}</div>`;
       }
       return validationCheck;
     },
@@ -463,21 +480,40 @@ export default {
   scrollbar-width: none;  /* Firefox */
 }
 
-  .autocomplete-result {
-    list-style: none;
-    text-align: left;
-    padding: 4px 2px;
-    cursor: pointer;
-  }
+.autocomplete-result {
+  list-style: none;
+  text-align: left;
+  padding: 4px 2px;
+  cursor: pointer;
+}
 
-  .autocomplete-result:hover {
-    background-color: #15172e;
-    color: white;
-  }
+.autocomplete-result:hover {
+  background-color: #15172e;
+  color: white;
+}
 
-  .autocomplete-result.is-active,
-  .autocomplete-result:hover {
-    background-color: #15172e;
-    color: white;
-  }
+.autocomplete-result.is-active,
+.autocomplete-result:hover {
+  background-color: #15172e;
+  color: white;
+}
+
+/* Input Validation    */
+input.invalid{
+  border-color: #800000;
+  border-width: 3px;
+  z-index: 3;
+}
+
+.errorspan {
+  float: right;
+  position: absolute;
+  z-index: 2;
+  color: red;
+  top: 14px;
+  left: 310px;
+}
+.errormsg {
+  color: red
+}
 </style>

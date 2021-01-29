@@ -31,10 +31,12 @@
                   <td><small v-for="permission in row.permissions" :key="permission">
                     <b-badge class='tag' v-if="permission === 'Admin'" variant="success">{{permission}}</b-badge>
                     <b-badge class='tag' v-else-if="permission === 'Tech'" variant="primary">{{permission}}</b-badge>
-                    <b-badge class='tag' v-else-if="permission === 'Financ'" variant="danger">{{permission}}</b-badge>
-                    <b-badge class='tag' v-else-if="permission === 'Staff-Brat2021-Lead'" variant="warning">{{permission}}</b-badge>
+                    <b-badge class='tag' v-else-if="permission === 'Financ'" variant="danger"> Financeiro </b-badge>
+                    <b-badge class='tag' v-else-if="permission === 'Staff-Brat2021-Lead'" variant="warning">Staff</b-badge>
+                    <b-badge class='tag' v-else-if="permission === 'Host-Brat2021'" variant="light">Host</b-badge>
+                    <b-badge class='tag' v-else-if="permission === 'Runner-Brat2021'" variant="light">Runner</b-badge>
+                    <b-badge class='tag' v-else-if="permission === 'Comentarista-Brat2021'" variant="light">Comentarista</b-badge>
                     <b-badge class='tag' v-else-if="permission === ''"></b-badge>
-                    <b-badge class='tag' v-else variant="light">{{permission}}</b-badge>
                   </small></td>
                   <td>
                     <router-link :to="`/app/user/${row.id}`"><b-button variant="dark">Visualizar</b-button></router-link>
