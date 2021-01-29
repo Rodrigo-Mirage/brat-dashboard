@@ -98,27 +98,34 @@
             </table>
             <div v-else>A agenda está vazia!</div>
             <div class="clearfix">
-              <div class="float-right">
                 <b-row>
-                  <b-button style="margin-right: 5px" @click="removeSetups" variant="dark">Remover tempos de setup</b-button>
+                  <b-col cols="7"></b-col>
 
-                  <b-form-group label="" label-for="estimatedTime">
-                    <b-input-group>
-                      <input id="setupTime"
-                            v-model="setupTime" 
-                            ref="setupTime"
-                            class="form-control input-transparent pl-3"
-                            type="time"
-                            required
-                            step='1'
-                            min="00:00:00" max="24:00:00"
-                            />
-                    </b-input-group>
-                  </b-form-group>
+                  <b-col cols="2">
+                    <b-button @click="removeSetups" variant="dark">Remover tempos de setup</b-button>
+                  </b-col>
 
-                  <b-button @click="addSetups" variant="dark">Adicionar tempos de setup</b-button>
+                  <b-col cols="1">
+                    <b-form-group label="" label-for="estimatedTime">
+                      <b-input-group>
+                        <input id="setupTime"
+                              v-model="setupTime" 
+                              ref="setupTime"
+                              class="form-control input-transparent pl-3"
+                              type="time"
+                              required
+                              step='1'
+                              min="00:00:00" max="24:00:00"
+                              />
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="2">
+                    <b-button @click="addSetups" variant="dark">Adicionar tempos de setup</b-button>
+                  </b-col>
+
                 </b-row>
-              </div>
             </div>
           </div>
         </Widget>
@@ -219,7 +226,7 @@ export default {
           "event_name": this.schedule[idx].event_name,
           "event_date": this.schedule[idx].event_date,
           "game": "Setup",
-          "duration": 600,
+          "duration": this.toSeconds(this.setupTime),
           "order": idx+1,
         };
         await this.schedule.splice(idx, 0, setup);
@@ -238,7 +245,7 @@ export default {
               "event_name": this.schedule[idx].event_name,
               "event_date": this.schedule[idx].event_date,
               "game": "Setup",
-              "duration": 600,
+              "duration": this.toSeconds(this.setupTime),
               "order": idx+1,
             };
             await this.schedule.splice(idx, 0, setup);
