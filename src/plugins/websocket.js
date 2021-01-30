@@ -13,9 +13,18 @@ export default function websocket(){
           case "getGames":
             store.commit('layout/listGames', payload.data);
             break;
+          //Events
           case "getEvents":
             store.commit('layout/listEvents', payload.data);
             break;
+          case "updateEventState":
+            store.commit('layout/updateEventState', payload.data);
+            break;
+          case "createEvent":
+            store.commit('layout/pushNewEvent', payload.data);
+            break;
+
+
           case "getEventExtras":
             store.commit('layout/listExtras', payload.data);
             break;

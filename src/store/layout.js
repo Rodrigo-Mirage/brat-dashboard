@@ -83,9 +83,17 @@ export default {
     listGames(state, payload){
       state.gamesList = payload[0];
     },
+    //Event
     listEvents(state, payload){
       state.eventsList = payload[0];
     },
+    updateEventState(state, payload){
+      state.eventsList.filter(element => element.id === payload[0].id)[0].active = payload[0].active;
+    },
+    pushNewEvent(state, payload){
+      state.eventsList.push(payload[0]);
+    },
+
     listExtras(state, payload){
       state.extrasList = payload[0];
     },
