@@ -23,7 +23,9 @@ export default function websocket(){
           case "createEvent":
             store.commit('layout/pushNewEvent', payload.data);
             break;
-
+          case "updateEvent":
+            store.commit('layout/updateEvent', payload.data);
+            break;
 
           case "getEventExtras":
             store.commit('layout/listExtras', payload.data);

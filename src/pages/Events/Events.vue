@@ -21,8 +21,8 @@
                   <th></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr v-for="row in this.eventsList" :key="row.id">
+              <tbody id="tableBody">
+                <tr v-for="row in this.eventsList" :key="row.id" :id="`row-`+row.id">
                   <td>{{row.id}}</td>
                   <td><input
                     ref="name"
@@ -55,10 +55,10 @@
                   <td v-else> Error </td>
 
                   <td v-if="row.active === `A`"><b-button variant="dark" @click="alterState(row.id)"> Desativar </b-button></td>
-                  <td v-else-if="row.active === `N`"><b-button variant="dark" @click="alterState(row.id)"> Ativar </b-button></td>
+                  <td v-else-if="row.active === `N` && eventsList.filter(element => element.active === `A`).length === 0"><b-button variant="dark" @click="alterState(row.id)"> Ativar </b-button></td>
                   <td v-else>  </td>
 
-                  <td><b-button @click="edit(row.id, row.name, row.donation_link, row.start, row.end)" variant="dark">Salvar alterações</b-button></td>
+                  <td><b-button @click="updateEvent(row.id, row.name, row.donation_link, row.start, row.end)" variant="dark">Salvar alterações</b-button></td>
                 </tr>
               </tbody>
             </table>
@@ -167,7 +167,7 @@ export default {
   name: 'Events',
   data() {
     return{
-      showCreate: true,
+      showCreate: false,
 
       newForm: {
         newName: '',
@@ -186,11 +186,15 @@ export default {
         newDonationLink: null,
         newStart: null,
         newEnd: null,
-      }
+      },
+
+      table: {
+
+      },
     }
   },
   methods: {
-    edit(id, name, donationLink, start, end){
+    updateEvent(id, name, donationLink, start, end){
       const wsPayload = {"endpoint":"updateEvent", "id":this.curReq, info:{"id":id, "name":name, "donation_link":donationLink, "start": start, "end": end}};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
     },
@@ -209,6 +213,7 @@ export default {
             "end": this.newForm.newEnd
             }
           };
+        console.log(wsPayload);
         this.$store.commit('layout/SOCKET_SEND', wsPayload);
       }
     },

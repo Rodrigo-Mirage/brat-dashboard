@@ -93,6 +93,13 @@ export default {
     pushNewEvent(state, payload){
       state.eventsList.push(payload[0]);
     },
+    updateEvent(state, payload){
+      state.eventsList.filter(element => element.id === payload[0].id)[0].active = payload[0].active;
+      state.eventsList.filter(element => element.id === payload[0].id)[0].donation_link = payload[0].donation_link;
+      state.eventsList.filter(element => element.id === payload[0].id)[0].end = payload[0].end;
+      state.eventsList.filter(element => element.id === payload[0].id)[0].name = payload[0].name;
+      state.eventsList.filter(element => element.id === payload[0].id)[0].start = payload[0].start;
+    },
 
     listExtras(state, payload){
       state.extrasList = payload[0];
