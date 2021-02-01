@@ -147,49 +147,99 @@
               </b-button>
             </b-form-row>
 
-            <div id='incentives' v-show="toggleIncentives" style="margin-top: 10px">                
-              
+            <div id='incentives' v-show="toggleIncentives" style="margin-top: 10px"> 
+             
               <b-form-row>
-                <button type="button" class="btn btn-default" @click="minusIncentive" style="margin-left: 6px">
-                  <span class="glyphicon glyphicon-minus"></span>
-                </button>
-
-                <button type="button" class="btn btn-default" @click="plusIncentive" style="margin-left: 10px">
-                  <span class="glyphicon glyphicon-plus"></span>
-                </button>
+                <h5 style="margin-top: 7px"> {{ form.incentives.length }} Incentivo(s) </h5>  
+                <b-button variant="dark" type="button" @click="plusIncentive" style="margin-left: 15px">
+                  Novo incentivo
+                </b-button>
               </b-form-row>
 
 
               <!-- Incentives rows -->
-              <b-form-row v-for="(incentive, idx) in form.incentives" :key="idx">
-                <b-col cols="6">
-                  <b-form-group :label="'Tipo do incentivo nº '+(idx+1)" :label-for="'type-'+idx">
-                    <b-input-group>
-                      <input :id="'type-'+idx"
-                            v-model="form.incentives[idx].type" 
-                            :ref="'type-'+idx"
-                            class="form-control input-transparent pl-3"
-                            type="text"
-                            placeholder=""/>
-                    </b-input-group>
-                  </b-form-group>
+              <b-form-row v-for="(incentive, idx) in form.incentives" :key="idx" style="border-bottom: solid; border-color: black">
+                  <b-col cols="1">
+                    <h6 style="margin-top: 38px"> {{idx+1}}º Incentivo </h6>
+                  </b-col>
+
+                  <b-col cols="3">
+                    <b-form-group label="Nome" :label-for="'name-'+idx">
+                      <b-input-group>
+                        <input :id="'name-'+idx"
+                              v-model="form.incentives[idx].name" 
+                              :ref="'name-'+idx"
+                              class="form-control input-transparent pl-3"
+                              type="text"
+                              placeholder=""/>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="4">
+                    <b-form-group label="Tipo" v-slot="{ ariaDescribedby }" :label-for="'type-'+idx">
+                      <b-form-radio-group
+                        :id="'type-'+idx"
+                        v-model="form.incentives[idx].type" 
+                        :options="typeOptions"
+                        :aria-describedby="ariaDescribedby"
+                        style="margin-top: 15px"
+                      ></b-form-radio-group>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="3">
+                    <b-form-group label="Comentário" :label-for="'comment-'+idx">
+                      <b-input-group>
+                        <input :id="'comment-'+idx"
+                              v-model="form.incentives[idx].comment" 
+                              :ref="'comment-'+idx"
+                              class="form-control input-transparent pl-3"
+                              type="text"
+                              placeholder=""/>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+
+                <b-col cols="1">
+                  <button type="button" class="btn btn-default" @click="minusIncentive(idx)" style="margin-left: 6px; margin-top: 31px">
+                    <span class="glyphicon glyphicon-minus"></span>
+                  </button>
                 </b-col>
 
-                <b-col cols="6">
-                  <b-form-group label="Comentário" :label-for="'comment-'+idx">
-                    <b-input-group>
-                      <input :id="'comment-'+idx"
-                            v-model="form.incentives[idx].comment" 
-                            :ref="'comment-'+idx"
-                            class="form-control input-transparent pl-3"
-                            type="text"
-                            placeholder=""/>
-                    </b-input-group>
-                  </b-form-group>
+
+                <!-- Incentive Options -->
+                <b-col cols="4"></b-col>
+                <b-col v-if="form.incentives[idx].type === 'private'" cols="2">
+                  <span style="margin-right: 15px"> Opções </span>
+                  <b-button variant="dark" @click="addOption(idx)"> Nova opção </b-button>
                 </b-col>
+
+
+                <div v-if="form.incentives[idx].type === 'private'" style="margin-top: 12px">
+                  <b-form-row v-for="(option, option_idx) in form.incentives[idx].options" :key="option_idx">
+                    <b-form-group>
+                      <b-input-group>
+
+                        <input :id="'type-'+idx+'-'+option_idx"
+                              v-model="form.incentives[idx].options[option_idx].name" 
+                              :ref="'type-'+idx+'-'+option_idx"
+                              class="form-control input-transparent pl-3"
+                              type="text"
+                              placeholder="Opção"/>
+                    
+                        <button type="button" class="btn btn-default" @click="removeOption(idx, option_idx)" style="margin-left: 6px">
+                          <span class="glyphicon glyphicon-minus"></span>
+                        </button>
+                    
+                      </b-input-group>
+                    </b-form-group>
+                  </b-form-row>
+                </div>
               </b-form-row>
             </div>
 
+            <!-- Submit -->
             <b-form-row style="margin-top: 20px">
               <small>*Não encontrou seu jogo na lista? Nos informe seu nome e ano de lançamento para adicionarmos!</small>
             </b-form-row>
@@ -228,7 +278,12 @@ export default {
       arrowCounter: -1,
 
       //Incentives Variables
-      toggleIncentives: false,
+      toggleIncentives: true,
+      typeOptions: [
+        { text: 'Sem Múltipla Escolha', value: 'none' },
+        { text: 'Escolha do Público', value: 'public' },
+        { text: 'Escolha do Runner', value: 'private' },
+      ],
 
       //Time Slot Checkbox Components
       timeSlots: ['manha'],
@@ -252,8 +307,14 @@ export default {
 
         incentives: [
           {
-            type: '',
+            type: 'private',
             comment: '',
+            name: '',
+            options: [
+              {
+                name: '',
+              },
+            ]
           },
         ]
       },
@@ -314,6 +375,7 @@ export default {
 
     //Submit Request Methods
     async submit() {
+      console.log(this.form.incentives);
       if(this.inputValidation()){
         let formatTime = this.form.estimatedTime.split(':');
         let estimatedSeconds = 0;
@@ -422,11 +484,17 @@ export default {
     showIncentives(){
       this.toggleIncentives = !this.toggleIncentives;
     },
-    minusIncentive(){
-      this.form.incentives.splice(this.form.incentives.length-1, 1);
+    minusIncentive(idx){
+      this.form.incentives.splice(idx, 1);
     },
     plusIncentive(){
-      this.form.incentives.push({type: '', comment: ''});
+      this.form.incentives.push({type: 'none', comment: '', name: '', options: [{ name: '' }]});
+    },
+    addOption(idx){
+      this.form.incentives[idx].options.push({name: ''});
+    },
+    removeOption(idx, option_idx){
+      this.form.incentives[idx].options.splice(option_idx, 1);
     }
   },
   computed:{
