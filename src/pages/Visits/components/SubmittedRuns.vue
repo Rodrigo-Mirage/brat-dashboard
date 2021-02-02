@@ -1,6 +1,5 @@
 <template>
   <div v-if="this.permissions.includes('Admin')">
-    {{onReload()}}
     <b-modal 
       id='review-run' 
       :title="`Revisar run de #ID ` + curRunId"
@@ -59,10 +58,10 @@
                   <th></th>
                 </tr>
               </thead>
-              <tbody v-for="row in submittedRuns" :key="row.id">
+              <tbody v-for="(row, idx) in submittedRuns" :key="row.id">
                   <tr>
-                    <td v-if="row.incentives.length > 0 && showIncentives"><b-button @click="toggleIncentives" variant="dark"><i class="las la-angle-down"></i></b-button></td>
-                    <td v-else-if="row.incentives.length > 0 && !showIncentives"><b-button @click="toggleIncentives" variant="dark"><i class="las la-angle-right"></i></b-button></td>
+                    <td v-if="row.incentives.length > 0 && showIncentives"><b-button @click="toggleIncentives(idx)" variant="dark"><i class="las la-angle-down"></i></b-button></td>
+                    <td v-else-if="row.incentives.length > 0 && !showIncentives"><b-button @click="toggleIncentives(idx)" variant="dark"><i class="las la-angle-right"></i></b-button></td>
                     <td v-else></td>
                     
                     <td>{{ row.id }}</td>
@@ -122,12 +121,10 @@ export default {
       curRunId: null,
 
       showIncentives: true,
+      toggleIncentive: [],
     }
   },
   methods: {
-    onReload(){
-      console.log(this.submittedRuns);
-    },
     getStatus(reviewed, approved, waiting){
       // 0 = Não revisada
       // 1 = Aprovada
@@ -188,7 +185,10 @@ export default {
     },
 
     //Incentives
-    toggleIncentives(){
+    toggleIncentives(idx){
+      console.log(idx);
+      this.toggleIncentive[idx] = true;
+      console.log(this.toggleIncentive)
       this.showIncentives = !this.showIncentives;
     }
   }, 
