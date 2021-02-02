@@ -1,6 +1,6 @@
 <template>
   <div v-if="this.permissions.includes('Admin')">
-
+    {{onReload()}}
     <b-modal 
       id='review-run' 
       :title="`Revisar run de #ID ` + curRunId"
@@ -47,6 +47,7 @@
             <table class="table" v-if="this.submittedRuns.length !== 0">
               <thead>
                 <tr>
+                  <th></th>
                   <th>#ID</th>
                   <th>Evento</th>
                   <th>Jogo</th>
@@ -58,25 +59,45 @@
                   <th></th>
                 </tr>
               </thead>
-              <tbody>
-                <tr v-for="row in this.submittedRuns" :key="row.id">
-                  <td>{{ row.id }}</td>
-                  <td>{{ row.event_name }}</td>
-                  <td>{{ row.game_name }}</td>
-                  <td>{{ row.category }}</td>
-                  <td>{{ row.platform }}</td>
-                  <td>{{ translateInterval(row.time_slot) }}</td>
-                  <td>{{ row.runner }}</td>
-                  <td>
-                    <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 0" variant='gray'> Não Revisada </b-badge>
-                    <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 1" variant='success'> Aprovada </b-badge>
-                    <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 2" variant='primary'> Aprovada, na fila de espera </b-badge>
-                    <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 3" variant='danger'> Recusada </b-badge>
-                  </td>
-                  <td>
-                    <b-button @click="reviewRun(row.id)" variant="dark">Revisar</b-button>
-                  </td>
-                </tr>
+              <tbody v-for="row in submittedRuns" :key="row.id">
+                  <tr>
+                    <td v-if="row.incentives.length > 0 && showIncentives"><b-button @click="toggleIncentives" variant="dark"><i class="las la-angle-down"></i></b-button></td>
+                    <td v-else-if="row.incentives.length > 0 && !showIncentives"><b-button @click="toggleIncentives" variant="dark"><i class="las la-angle-right"></i></b-button></td>
+                    <td v-else></td>
+                    
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.event_name }}</td>
+                    <td>{{ row.game_name }}</td>
+                    <td>{{ row.category }}</td>
+                    <td>{{ row.platform }}</td>
+                    <td>{{ translateInterval(row.time_slot) }}</td>
+                    <td>{{ row.runner }}</td>
+                    <td>
+                      <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 0" variant='gray'> Não Revisada </b-badge>
+                      <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 1" variant='success'> Aprovada </b-badge>
+                      <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 2" variant='primary'> Aprovada, na fila de espera </b-badge>
+                      <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 3" variant='danger'> Recusada </b-badge>
+                    </td>
+                    <td>
+                      <b-button @click="reviewRun(row.id)" variant="dark">Revisar</b-button>
+                    </td>
+                  </tr>
+
+                  <tr v-for="option in row.incentives" :key="option.id"
+                    v-show="showIncentives"
+                    style="background-color: #212547; border-left: 1px solid black; border-right: 1px solid black;">
+                    <td>{{ option.id }}</td>
+                    <td>{{ option.comment }}</td>
+                    <td>{{ option.name }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+
               </tbody>
             </table>
 
@@ -99,9 +120,14 @@ export default {
   data() {
     return{
       curRunId: null,
+
+      showIncentives: true,
     }
   },
   methods: {
+    onReload(){
+      console.log(this.submittedRuns);
+    },
     getStatus(reviewed, approved, waiting){
       // 0 = Não revisada
       // 1 = Aprovada
@@ -160,6 +186,11 @@ export default {
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
       this.$bvModal.hide('review-run');
     },
+
+    //Incentives
+    toggleIncentives(){
+      this.showIncentives = !this.showIncentives;
+    }
   }, 
   computed: {
     ...mapState('layout', {
