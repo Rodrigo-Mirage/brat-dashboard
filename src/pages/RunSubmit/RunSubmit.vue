@@ -276,7 +276,7 @@ export default {
       arrowCounter: -1,
 
       //Incentives Variables
-      toggleIncentives: true,
+      toggleIncentives: false,
       typeOptions: [
         { text: 'Sem Múltipla Escolha', value: 'none' },
         { text: 'Escolha do Público', value: 'public' },

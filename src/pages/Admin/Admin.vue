@@ -22,13 +22,13 @@
               </thead>
               <tbody>
                 <tr v-for="row in this.userList" :key="row.id">
-                  <td>{{row.id}}</td>
-                  <td>{{row.first_name}}</td>
-                  <td>{{row.last_name}}</td>
-                  <td>{{row.username}}</td>
-                  <td>{{row.email}}</td>
+                  <td class="align-middle">{{row.id}}</td>
+                  <td class="align-middle">{{row.first_name}}</td>
+                  <td class="align-middle">{{row.last_name}}</td>
+                  <td class="align-middle">{{row.username}}</td>
+                  <td class="align-middle">{{row.email}}</td>
 
-                  <td><small v-for="permission in row.permissions" :key="permission">
+                  <td class="align-middle"><small v-for="permission in row.permissions" :key="permission">
                     <b-badge class='tag' v-if="permission === 'Admin'" variant="success">{{permission}}</b-badge>
                     <b-badge class='tag' v-else-if="permission === 'Tech'" variant="primary">{{permission}}</b-badge>
                     <b-badge class='tag' v-else-if="permission === 'Financ'" variant="danger"> Financeiro </b-badge>

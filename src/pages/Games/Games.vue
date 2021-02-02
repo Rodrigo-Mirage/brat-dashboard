@@ -19,7 +19,7 @@
               </thead>
               <tbody>
                 <tr v-for="row in this.gamesList" :key="row.id">
-                  <td>{{row.id}}</td>
+                  <td class="align-middle">{{row.id}}</td>
                   <td><input
                     ref="gameName"
                     class="form-control input-transparent pl-3"

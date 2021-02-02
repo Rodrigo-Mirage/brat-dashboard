@@ -60,18 +60,18 @@
               </thead>
               <tbody v-for="(row, idx) in submittedRuns" :key="row.id">
                   <tr>
-                    <td v-if="row.incentives.length > 0 && showIncentives"><b-button @click="toggleIncentives(idx)" variant="dark"><i class="las la-angle-down"></i></b-button></td>
-                    <td v-else-if="row.incentives.length > 0 && !showIncentives"><b-button @click="toggleIncentives(idx)" variant="dark"><i class="las la-angle-right"></i></b-button></td>
+                    <td v-if="row.incentives.length > 0 && showIncentives"><b-button @click="toggleIncentives(idx)" variant="dark"><i class="las la-angle-right"></i></b-button></td>
+                    <td v-else-if="row.incentives.length > 0 && !showIncentives"><b-button @click="toggleIncentives(idx)" variant="dark"><i class="las la-angle-down"></i></b-button></td>
                     <td v-else></td>
                     
-                    <td>{{ row.id }}</td>
-                    <td>{{ row.event_name }}</td>
-                    <td>{{ row.game_name }}</td>
-                    <td>{{ row.category }}</td>
-                    <td>{{ row.platform }}</td>
-                    <td>{{ translateInterval(row.time_slot) }}</td>
-                    <td>{{ row.runner }}</td>
-                    <td>
+                    <td class="align-middle">{{ row.id }}</td>
+                    <td class="align-middle">{{ row.event_name }}</td>
+                    <td class="align-middle">{{ row.game_name }}</td>
+                    <td class="align-middle">{{ row.category }}</td>
+                    <td class="align-middle">{{ row.platform }}</td>
+                    <td class="align-middle">{{ translateInterval(row.time_slot) }}</td>
+                    <td class="align-middle">{{ row.runner }}</td>
+                    <td class="align-middle">
                       <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 0" variant='gray'> Não Revisada </b-badge>
                       <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 1" variant='success'> Aprovada </b-badge>
                       <b-badge v-if="getStatus(row.reviewed, row.approved, row.waiting) === 2" variant='primary'> Aprovada, na fila de espera </b-badge>
@@ -83,11 +83,11 @@
                   </tr>
 
                   <tr v-for="option in row.incentives" :key="option.id"
-                    v-show="showIncentives"
+                    v-show="toggleIncentive[idx]"
                     style="background-color: #212547; border-left: 1px solid black; border-right: 1px solid black;">
-                    <td>{{ option.id }}</td>
-                    <td>{{ option.comment }}</td>
-                    <td>{{ option.name }}</td>
+                    <td class="align-middle">{{ option.id }}</td>
+                    <td class="align-middle">{{ option.comment }}</td>
+                    <td class="align-middle">{{ option.name }}</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -186,9 +186,8 @@ export default {
 
     //Incentives
     toggleIncentives(idx){
-      console.log(idx);
-      this.toggleIncentive[idx] = true;
-      console.log(this.toggleIncentive)
+      console.log(this.submittedRuns[idx].incentives.length > 0 && this.toggleIncentive[idx]);
+      this.toggleIncentive[idx] = !this.toggleIncentive[idx];
       this.showIncentives = !this.showIncentives;
     }
   }, 

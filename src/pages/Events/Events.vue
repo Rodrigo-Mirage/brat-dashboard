@@ -23,7 +23,7 @@
               </thead>
               <tbody id="tableBody">
                 <tr v-for="row in this.eventsList" :key="row.id" :id="`row-`+row.id">
-                  <td>{{row.id}}</td>
+                  <td class="align-middle">{{row.id}}</td>
                   <td><input
                     ref="name"
                     class="form-control input-transparent pl-3"
@@ -49,10 +49,10 @@
                     v-model="row.end" 
                   /></td>
 
-                  <td v-if="row.active === `A`"><b-badge variant="success"> Ativo </b-badge></td>
-                  <td v-else-if="row.active === `N`"><b-badge variant="primary"> Em espera </b-badge></td>
-                  <td v-else-if="row.active === `D`"><b-badge variant="danger"> Desativado </b-badge></td>
-                  <td v-else> Error </td>
+                  <td class="align-middle" v-if="row.active === `A`"><b-badge variant="success"> Ativo </b-badge></td>
+                  <td class="align-middle" v-else-if="row.active === `N`"><b-badge variant="primary"> Em espera </b-badge></td>
+                  <td class="align-middle" v-else-if="row.active === `D`"><b-badge variant="danger"> Desativado </b-badge></td>
+                  <td class="align-middle" v-else> Error </td>
 
                   <td v-if="row.active === `A`"><b-button variant="dark" @click="alterState(row.id)"> Desativar </b-button></td>
                   <td v-else-if="row.active === `N` && eventsList.filter(element => element.active === `A`).length === 0"><b-button variant="dark" @click="alterState(row.id)"> Ativar </b-button></td>

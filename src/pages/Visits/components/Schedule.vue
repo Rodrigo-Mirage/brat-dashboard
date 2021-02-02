@@ -123,13 +123,13 @@
                 animation='100'
               >
                 <tr v-for="(row, idx) in schedule" :key="idx" class="dnd-item">
-                  <td v-if="dragEnabled" class="dnd-handle"> <i class="fa fa-align-justify handle"></i> </td>
+                  <td  v-if="dragEnabled" class="dnd-handle align-middle"> <i class="fa fa-align-justify handle"></i> </td>
                   <td v-else></td>
-                  <td> {{ row.id }}</td>
-                  <td> {{ formatHorary(row.event_date, row.duration, row.extra_time) }}</td>
-                  <td> {{ row.game }} {{ row.order }}</td>
-                  <td v-if="row.type !== 'setup' || !dragEnabled"> {{ formatInterval(row.duration) }}</td>
-                  <td v-else>
+                  <td class="align-middle"> {{ row.id }}</td>
+                  <td class="align-middle"> {{ formatHorary(row.event_date, row.duration, row.extra_time) }}</td>
+                  <td class="align-middle"> {{ row.game }} {{ row.order }}</td>
+                  <td class="align-middle" v-if="row.type !== 'setup' || !dragEnabled"> {{ formatInterval(row.duration) }}</td>
+                  <td class="align-middle" v-else>
                     <input
                       :value=formatInterval(row.duration)
                       @input="row.duration = toSeconds($event.target.value)"
@@ -139,15 +139,17 @@
                       step='1'
                     />
                   </td>
-                  <td> {{ formatInterval(row.extra_time) }}</td>
-                  <td> {{ (row.category ? row.category:"") }}</td>
-                  <td> {{ (row.interval ? translateInterval(row.interval):"") }} </td>
-                  <td> {{ (row.platform ? row.platform:"") }}</td>
-                  <td v-if="row.stream_link"><a :href=row.stream_link> {{ row.runner }} </a></td>
-                  <td v-else> {{ row.runner }} </td>
-                  <td v-show="dragEnabled" v-if="row.type !== 'setup'"> <b-button @click="addSetup(idx)" variant="dark">Adicionar setup</b-button> </td>
+                  <td class="align-middle"> {{ formatInterval(row.extra_time) }}</td>
+                  <td class="align-middle"> {{ (row.category ? row.category:"") }}</td>
+                  <td class="align-middle"> {{ (row.interval ? translateInterval(row.interval):"") }} </td>
+                  <td class="align-middle"> {{ (row.platform ? row.platform:"") }}</td>
+
+                  <td class="align-middle" v-if="row.stream_link"><a :href=row.stream_link> {{ row.runner }} </a></td>
+                  <td class="align-middle" v-else> {{ row.runner }} </td>
+
+                  <td class="align-middle" v-show="dragEnabled" v-if="row.type !== 'setup'"> <b-button @click="addSetup(idx)" variant="dark">Adicionar setup</b-button> </td>
                   <td v-else> </td>
-                  <td v-show="dragEnabled"><i class="fa fa-times close" @click="removeAt(row.order-1)"></i> </td>
+                  <td class="align-middle" v-show="dragEnabled"><i class="fa fa-times close" @click="removeAt(row.order-1)"></i> </td>
                 </tr>
               </draggable>
             </table>
