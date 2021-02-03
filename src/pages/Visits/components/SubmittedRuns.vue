@@ -32,6 +32,7 @@
               <b-button @click="approveWaiting()" variant="primary">Aprovar e colocar na fila</b-button>
             </b-col>
           </b-row>
+          <span style="color: red;"> {{ evaluationError }} </span>
         </div>
         <hr/>
     </b-modal>
@@ -60,10 +61,12 @@
               </thead>
               <tbody v-for="(row, idx) in submittedRuns" :key="row.id">
                   <tr>
-                    <td v-if="row.incentives.length > 0 && showIncentives"><b-button @click="toggleIncentives(idx)" variant="dark"><i class="las la-angle-right"></i></b-button></td>
-                    <td v-else-if="row.incentives.length > 0 && !showIncentives"><b-button @click="toggleIncentives(idx)" variant="dark"><i class="las la-angle-down"></i></b-button></td>
-                    <td v-else></td>
-                    
+                    <td v-if="row.incentives.length === 0"></td>
+                    <td v-else>
+                      <b-button v-show="!toggle(idx)" @click="toggleIncentives(idx)" variant="dark"><i class="las la-angle-right"></i></b-button>
+                      <b-button v-show="toggle(idx)" @click="toggleIncentives(idx)" variant="dark"><i class="las la-angle-down"></i></b-button>
+                    </td>
+
                     <td class="align-middle">{{ row.id }}</td>
                     <td class="align-middle">{{ row.event_name }}</td>
                     <td class="align-middle">{{ row.game_name }}</td>
@@ -82,21 +85,87 @@
                     </td>
                   </tr>
 
-                  <tr v-for="option in row.incentives" :key="option.id"
-                    v-show="toggleIncentive[idx]"
-                    style="background-color: #212547; border-left: 1px solid black; border-right: 1px solid black;">
-                    <td class="align-middle">{{ option.id }}</td>
-                    <td class="align-middle">{{ option.comment }}</td>
-                    <td class="align-middle">{{ option.name }}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
+                  <tr v-show="toggle(idx)"
+                    style="background-color: #303462; border-left: 1px solid black; border-right: 1px solid black;">
+                    <td colspan="10" class="align-middle">
+                      <div class="table-resposive">
+                        <table class="table table-sm table-striped">
+                          <thead>
+                            <tr>
+                              <th>#ID</th>
+                              <th>Nome</th>
+                              <th>Tipo</th>
+                              <th>Opções</th>
+                              <th>Comentário</th>
+                              <th>Meta</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="incentive in row.incentives" :key="incentive.id"
+                              v-show="toggle(idx)">
+                              <td scope="col" class="align-middle">{{ incentive.id }} </td>
+                              <td class="align-middle">
+                                <input
+                                  v-model="incentive.name"
+                                  ref="name"
+                                  class="form-control input-transparent pl-3"
+                                  type="text"
+                                />
+                              </td>
 
+                              <td class="align-middle" v-if="incentive.type === 'public'">Escolha do público</td>
+                              <td class="align-middle" v-if="incentive.type === 'private'">Escolha do runner</td>
+                              <td class="align-middle" v-if="incentive.type === 'none'">Sem múltipla escolha</td>
+
+                              <td
+                                class="align-middle" 
+                                v-if="incentive.type === 'private'">
+                                <div v-for="option in incentive.BidwarOptions" :key="option.id">
+                                  {{ option.option }}
+                                </div>
+                              </td>
+                              <td v-else></td>
+
+                              <td class="align-middle" style="max-width:400px; word-wrap:break-word;">
+                                <textarea
+                                  style="overflow: hidden; resize: none"
+                                  minlength="100"
+                                  maxlength="300"
+                                  rows="7"
+                                  v-model="incentive.comment"
+                                  ref="comment"
+                                  class="form-control input-transparent pl-3"
+                                />
+                              </td>
+                              <td class="align-middle" v-if="incentive.type === 'none'">
+                                <input
+                                  v-model="incentiveGoal[incentive.id]"
+                                  ref="goal"
+                                  class="form-control input-transparent pl-3"
+                                  type="number"
+                                  style="width:100%; display:block; max-width:300px"
+                                />
+                              </td>
+                              <td v-else></td>
+                              
+                              <td class="align-middle">
+                                <b-form-group v-slot="{ ariaDescribedby }">
+                                  <b-form-radio-group
+                                    v-model="evaluatedIncentives[incentive.id]" 
+                                    :options="evaluateOptions"
+                                    :aria-describedby="ariaDescribedby"
+                                  ></b-form-radio-group>
+                                </b-form-group>
+                              </td>
+                              {{ fillEvaluators(row.reviewed, incentive.id) }}
+
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
               </tbody>
             </table>
 
@@ -121,7 +190,16 @@ export default {
       curRunId: null,
 
       showIncentives: true,
-      toggleIncentive: [],
+      toggleIncentive: {},
+
+
+      incentiveGoal: {},
+      evaluatedIncentives: {},
+      evaluationError: '',
+      evaluateOptions: [
+        { text: 'Aceitar', value: true },
+        { text: 'Recusar', value: false },
+      ],
     }
   },
   methods: {
@@ -165,20 +243,50 @@ export default {
 
     //Review Modal
     reviewRun(id){
+      this.evaluationError = '';
       this.curRunId = id;
       this.$bvModal.show('review-run');
     },
     approve(){
+      const runsArr = this.submittedRuns.filter(element => element.id === this.curRunId);
+      //Verify if the run exists and only one was found
+      if(runsArr.length === 1){
+        const run = runsArr[0];
+        if(!run.reviewed){
+          for(let incentive in run.incentives){
+            if(this.evaluatedIncentives[run.incentives[incentive].id] === undefined) return this.evaluationError = "Por favor, avalie os incentivos da run.";
+          }
+        }
+        if(run.reviewed === true && run.approved === true && run.waiting === false) return this.evaluationError = "A run já foi aprovada.";
+      }
       let wsPayload = {"endpoint":"updateSubmitRun", "id":this.curReq, "info":{"id": this.curRunId, "reviewed": true, "approved": true, "waiting": false}};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
       this.$bvModal.hide('review-run');
     },
     refuse(){
+      const runsArr = this.submittedRuns.filter(element => element.id === this.curRunId);
+      //Verify if the run exists and only one was found
+      if(runsArr.length === 1){
+        const run = runsArr[0];
+        if(run.reviewed === true && run.approved === false && run.waiting === false) return this.evaluationError = "A run já foi recusada.";
+      }
+
       let wsPayload = {"endpoint":"updateSubmitRun", "id":this.curReq, "info":{"id": this.curRunId, "reviewed": true, "approved": false, "waiting": false}};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
       this.$bvModal.hide('review-run');
     },
     approveWaiting(){
+      const runsArr = this.submittedRuns.filter(element => element.id === this.curRunId);
+      //Verify if the run exists and only one was found
+      if(runsArr.length === 1){
+        const run = runsArr[0];
+        if(!run.reviewed){
+          for(let incentive in run.incentives){
+            if(this.evaluatedIncentives[run.incentives[incentive].id] === undefined) return this.evaluationError = "Por favor, avalie os incentivos da run.";
+          }
+        }
+        if(run.reviewed === true && run.approved === true && run.waiting === true) return this.evaluationError = "A run já está na fila.";
+      }
       let wsPayload = {"endpoint":"updateSubmitRun", "id":this.curReq, "info":{"id": this.curRunId, "reviewed": true, "approved": true, "waiting": true}};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
       this.$bvModal.hide('review-run');
@@ -186,9 +294,23 @@ export default {
 
     //Incentives
     toggleIncentives(idx){
-      console.log(this.submittedRuns[idx].incentives.length > 0 && this.toggleIncentive[idx]);
-      this.toggleIncentive[idx] = !this.toggleIncentive[idx];
-      this.showIncentives = !this.showIncentives;
+      let value;
+      if(this.toggleIncentive === undefined){
+        value = false;
+      }else{
+        value = !this.toggleIncentive[idx]
+      }
+      this.$set(this.toggleIncentive, idx, value);
+    },
+    toggle(idx){
+      if(this.toggleIncentive[idx] === undefined) return false;
+      return this.toggleIncentive[idx];
+    },
+    fillEvaluators(runState, incentiveId){
+      if(runState){
+        //TODO, se o incentivo não existir em event_run_incentives, marcar como falso, caso contrario true
+        this.evaluatedIncentives[incentiveId] = false;
+      }
     }
   }, 
   computed: {
@@ -208,3 +330,18 @@ export default {
   }
 }
 </script>
+
+
+<style scoped>
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+</style>
