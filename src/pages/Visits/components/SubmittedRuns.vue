@@ -248,7 +248,9 @@ export default {
       this.$bvModal.show('review-run');
     },
     approve(){
+      //TODO validate inputs
       const runsArr = this.submittedRuns.filter(element => element.id === this.curRunId);
+      let wsPayload = null;
       //Verify if the run exists and only one was found
       if(runsArr.length === 1){
         const run = runsArr[0];
@@ -258,25 +260,74 @@ export default {
           }
         }
         if(run.reviewed === true && run.approved === true && run.waiting === false) return this.evaluationError = "A run já foi aprovada.";
+
+        //Generate the websocket payload based on the incentives.
+        if(run.incentives.length > 0){
+          let curIncentives = [];
+          for(let incentiveIdx in run.incentives){
+            let incentive = run.incentives[incentiveIdx];
+            console.log(this.evaluatedIncentives);
+            if(this.evaluatedIncentives[incentive.id]){
+              if(incentive.type === "none"){
+                curIncentives.push({
+                  "id": incentive.id,
+                  "run_id": incentive.run_id,
+                  "type": incentive.type,
+                  "goal": this.incentiveGoal[incentive.id],
+                });
+              }else{
+                let bidwarOption = []
+                for(let option in incentive.BidwarOptions){
+                  bidwarOption.push({
+                    "id": incentive.BidwarOptions[option].id,
+                  })
+                }
+
+                curIncentives.push({
+                  "id": incentive.id,
+                  "run_id": incentive.run_id,
+                  "type": incentive.type,
+                  "goal": 0,
+                  "options": bidwarOption,
+                });
+              }
+            }
+          }
+
+          wsPayload = {"endpoint":"updateSubmitRunNRunIncentives" , "id": this.curReq, "info":{
+            "id": this.curRunId, "reviewed": true, "approved": true, "waiting": false,
+            "incentives": curIncentives,
+          }};
+        }else{
+          wsPayload = {"endpoint":"updateSubmitRun", "id":this.curReq, "info":{"id": this.curRunId, "reviewed": true, "approved": true, "waiting": false}};
+        }
       }
-      let wsPayload = {"endpoint":"updateSubmitRun", "id":this.curReq, "info":{"id": this.curRunId, "reviewed": true, "approved": true, "waiting": false}};
+
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
       this.$bvModal.hide('review-run');
     },
     refuse(){
       const runsArr = this.submittedRuns.filter(element => element.id === this.curRunId);
+      let wsPayload = null;
       //Verify if the run exists and only one was found
       if(runsArr.length === 1){
         const run = runsArr[0];
         if(run.reviewed === true && run.approved === false && run.waiting === false) return this.evaluationError = "A run já foi recusada.";
+
+        
+        if(run.incentives.length > 0){
+          wsPayload = {"endpoint":"refuseSubmitRunNRemoveIncentives", "id":this.curReq, "info":{"id": this.curRunId, "reviewed": true, "approved": false, "waiting": false}};
+        }else{
+          wsPayload = {"endpoint":"updateSubmitRun", "id":this.curReq, "info":{"id": this.curRunId, "reviewed": true, "approved": false, "waiting": false}};
+        }
       }
 
-      let wsPayload = {"endpoint":"updateSubmitRun", "id":this.curReq, "info":{"id": this.curRunId, "reviewed": true, "approved": false, "waiting": false}};
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
       this.$bvModal.hide('review-run');
     },
     approveWaiting(){
       const runsArr = this.submittedRuns.filter(element => element.id === this.curRunId);
+      let wsPayload = null;
       //Verify if the run exists and only one was found
       if(runsArr.length === 1){
         const run = runsArr[0];
@@ -286,14 +337,55 @@ export default {
           }
         }
         if(run.reviewed === true && run.approved === true && run.waiting === true) return this.evaluationError = "A run já está na fila.";
+
+        //Generate the websocket payload based on the incentives.
+        if(run.incentives.length > 0){
+          let curIncentives = [];
+          for(let incentiveIdx in run.incentives){
+            let incentive = run.incentives[incentiveIdx];
+            if(this.evaluatedIncentives[incentive.id]){
+              if(incentive.type === "none"){
+                curIncentives.push({
+                  "id": incentive.id,
+                  "run_id": incentive.run_id,
+                  "type": incentive.type,
+                  "goal": this.incentiveGoal[incentive.id],
+                });
+              }else{
+                let bidwarOption = []
+                for(let option in incentive.BidwarOptions){
+                  bidwarOption.push({
+                    "id": incentive.BidwarOptions[option].id,
+                  })
+                }
+
+                curIncentives.push({
+                  "id": incentive.id,
+                  "run_id": incentive.run_id,
+                  "type": incentive.type,
+                  "goal": 0,
+                  "options": bidwarOption,
+                });
+              }
+            }
+          }
+
+          wsPayload = {"endpoint":"updateSubmitRunNRunIncentives" , "id": this.curReq, "info":{
+            "id": this.curRunId, "reviewed": true, "approved": true, "waiting": true,
+            "incentives": curIncentives,
+          }};
+        }else{
+          wsPayload = {"endpoint":"updateSubmitRun", "id":this.curReq, "info":{"id": this.curRunId, "reviewed": true, "approved": true, "waiting": true}};
+        }
       }
-      let wsPayload = {"endpoint":"updateSubmitRun", "id":this.curReq, "info":{"id": this.curRunId, "reviewed": true, "approved": true, "waiting": true}};
+
       this.$store.commit('layout/SOCKET_SEND', wsPayload);
       this.$bvModal.hide('review-run');
     },
 
     //Incentives
     toggleIncentives(idx){
+      console.log(this.submittedRuns);
       let value;
       if(this.toggleIncentive === undefined){
         value = false;

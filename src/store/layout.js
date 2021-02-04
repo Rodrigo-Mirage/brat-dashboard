@@ -119,6 +119,15 @@ export default {
       state.submittedRuns.filter(element => element.id === payload[0].id)[0].approved = payload[0].approved;
       state.submittedRuns.filter(element => element.id === payload[0].id)[0].waiting = payload[0].waiting;
     },
+    updateSubmitRunIncentives(state, payload){
+      state.submittedRuns.filter(element => element.id === payload[0].id)[0].reviewed = payload[0].reviewed;
+      state.submittedRuns.filter(element => element.id === payload[0].id)[0].approved = payload[0].approved;
+      state.submittedRuns.filter(element => element.id === payload[0].id)[0].waiting = payload[0].waiting;
+      state.submittedRuns.filter(element => element.id === payload[0].id)[0].approvedIncentives = payload[0].approved_incentives;
+    },
+
+
+
     updateSchedule(state, payload){
       //console.log("diff", state.schedule.filter(({ id: id1 }) => !payload.some(({ id: id2 }) => id2 === id1)))
       //console.log("payload:", payload);
