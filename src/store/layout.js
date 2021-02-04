@@ -123,9 +123,14 @@ export default {
       state.submittedRuns.filter(element => element.id === payload[0].id)[0].reviewed = payload[0].reviewed;
       state.submittedRuns.filter(element => element.id === payload[0].id)[0].approved = payload[0].approved;
       state.submittedRuns.filter(element => element.id === payload[0].id)[0].waiting = payload[0].waiting;
-      state.submittedRuns.filter(element => element.id === payload[0].id)[0].approvedIncentives = payload[0].approved_incentives;
+      state.submittedRuns.filter(element => element.id === payload[0].id)[0].approved_incentives = payload[0].approved_incentives;
     },
-
+    removeIncentives(state, payload){
+      let incentives = state.submittedRuns.filter(element => element.id === payload[0].id)[0].approved_incentives;
+      for(let incentive in incentives){
+        incentives[incentive] = false;
+      }
+    },
 
 
     updateSchedule(state, payload){

@@ -152,14 +152,13 @@
                               <td class="align-middle">
                                 <b-form-group v-slot="{ ariaDescribedby }">
                                   <b-form-radio-group
-                                    v-model="evaluatedIncentives[incentive.id]" 
+                                    v-model="row.approved_incentives[incentive.id]" 
                                     :options="evaluateOptions"
                                     :aria-describedby="ariaDescribedby"
                                   ></b-form-radio-group>
                                 </b-form-group>
                               </td>
-                              {{ fillEvaluators(row.reviewed, incentive.id) }}
-
+                              
                             </tr>
                           </tbody>
                         </table>
@@ -194,7 +193,6 @@ export default {
 
 
       incentiveGoal: {},
-      evaluatedIncentives: {},
       evaluationError: '',
       evaluateOptions: [
         { text: 'Aceitar', value: true },
@@ -256,7 +254,7 @@ export default {
         const run = runsArr[0];
         if(!run.reviewed){
           for(let incentive in run.incentives){
-            if(this.evaluatedIncentives[run.incentives[incentive].id] === undefined) return this.evaluationError = "Por favor, avalie os incentivos da run.";
+            if(run.approved_incentives[run.incentives[incentive].id] === undefined) return this.evaluationError = "Por favor, avalie os incentivos da run.";
           }
         }
         if(run.reviewed === true && run.approved === true && run.waiting === false) return this.evaluationError = "A run já foi aprovada.";
@@ -266,8 +264,7 @@ export default {
           let curIncentives = [];
           for(let incentiveIdx in run.incentives){
             let incentive = run.incentives[incentiveIdx];
-            console.log(this.evaluatedIncentives);
-            if(this.evaluatedIncentives[incentive.id]){
+            if(run.approved_incentives[incentive.id]){
               if(incentive.type === "none"){
                 curIncentives.push({
                   "id": incentive.id,
@@ -333,7 +330,7 @@ export default {
         const run = runsArr[0];
         if(!run.reviewed){
           for(let incentive in run.incentives){
-            if(this.evaluatedIncentives[run.incentives[incentive].id] === undefined) return this.evaluationError = "Por favor, avalie os incentivos da run.";
+            if(run.approved_incentives[run.incentives[incentive].id] === undefined) return this.evaluationError = "Por favor, avalie os incentivos da run.";
           }
         }
         if(run.reviewed === true && run.approved === true && run.waiting === true) return this.evaluationError = "A run já está na fila.";
@@ -343,7 +340,7 @@ export default {
           let curIncentives = [];
           for(let incentiveIdx in run.incentives){
             let incentive = run.incentives[incentiveIdx];
-            if(this.evaluatedIncentives[incentive.id]){
+            if(run.approved_incentives[incentive.id]){
               if(incentive.type === "none"){
                 curIncentives.push({
                   "id": incentive.id,
@@ -385,7 +382,6 @@ export default {
 
     //Incentives
     toggleIncentives(idx){
-      console.log(this.submittedRuns);
       let value;
       if(this.toggleIncentive === undefined){
         value = false;
@@ -398,12 +394,6 @@ export default {
       if(this.toggleIncentive[idx] === undefined) return false;
       return this.toggleIncentive[idx];
     },
-    fillEvaluators(runState, incentiveId){
-      if(runState){
-        //TODO, se o incentivo não existir em event_run_incentives, marcar como falso, caso contrario true
-        this.evaluatedIncentives[incentiveId] = false;
-      }
-    }
   }, 
   computed: {
     ...mapState('layout', {
