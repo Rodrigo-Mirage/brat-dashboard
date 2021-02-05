@@ -106,6 +106,10 @@
                               v-show="toggle(idx)">
                               <td scope="col" class="align-middle">{{ incentive.id }} </td>
                               <td class="align-middle">
+                                <!-- 
+                                  :value = incentive.name
+                                  @input = "updateIncentive($event, incentive)"
+                                -->
                                 <input
                                   v-model="incentive.name"
                                   ref="name"
@@ -133,7 +137,7 @@
                                   minlength="100"
                                   maxlength="300"
                                   rows="7"
-                                  v-model="incentive.comment"
+                                  v-model = incentive.comment
                                   ref="comment"
                                   class="form-control input-transparent pl-3"
                                 />
@@ -141,6 +145,7 @@
                               <td class="align-middle" v-if="incentive.type === 'none'">
                                 <input
                                   v-model="incentiveGoal[incentive.id]"
+                                  :class="{invalid: !incentiveGoal[incentive.id] && row.approved_incentives[incentive.id]}"
                                   ref="goal"
                                   class="form-control input-transparent pl-3"
                                   type="number"
@@ -158,7 +163,7 @@
                                   ></b-form-radio-group>
                                 </b-form-group>
                               </td>
-                              
+
                             </tr>
                           </tbody>
                         </table>
@@ -182,6 +187,7 @@
 <script>
 import Widget from '@/components/Widget/Widget';
 import { mapState } from 'vuex';
+const _ = require('lodash');
 export default {
   name: 'Visits',
   data() {
@@ -257,7 +263,13 @@ export default {
             if(run.approved_incentives[run.incentives[incentive].id] === undefined) return this.evaluationError = "Por favor, avalie os incentivos da run.";
           }
         }
+
+
         if(run.reviewed === true && run.approved === true && run.waiting === false) return this.evaluationError = "A run já foi aprovada.";
+
+        for(let incentive in run.incentives){
+          if(run.incentives[incentive].type === 'none' && (!(run.incentives[incentive].id in this.incentiveGoal) || this.incentiveGoal[run.incentives[incentive].id] === '')) return this.evaluationError = "Por favor, preecha todas as metas.";
+        }
 
         //Generate the websocket payload based on the incentives.
         if(run.incentives.length > 0){
@@ -394,6 +406,11 @@ export default {
       if(this.toggleIncentive[idx] === undefined) return false;
       return this.toggleIncentive[idx];
     },
+    updateIncentive: _.debounce(function (e, incentive) {
+      console.log(e.target.value);
+      console.log(incentive);
+      //this.filterKey = e.target.value;
+    }, 500)
   }, 
   computed: {
     ...mapState('layout', {
@@ -425,5 +442,11 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+input.invalid{
+  border-color: #800000;
+  border-width: 3px;
+  z-index: 3;
 }
 </style>
