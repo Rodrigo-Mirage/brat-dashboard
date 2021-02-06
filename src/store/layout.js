@@ -124,12 +124,20 @@ export default {
       state.submittedRuns.filter(element => element.id === payload[0].id)[0].approved = payload[0].approved;
       state.submittedRuns.filter(element => element.id === payload[0].id)[0].waiting = payload[0].waiting;
       state.submittedRuns.filter(element => element.id === payload[0].id)[0].approved_incentives = payload[0].approved_incentives;
+      state.submittedRuns.filter(element => element.id === payload[0].id)[0].goals = payload[0].goals;
     },
     removeIncentives(state, payload){
       let incentives = state.submittedRuns.filter(element => element.id === payload[0].id)[0].approved_incentives;
       for(let incentive in incentives){
         incentives[incentive] = false;
       }
+    },
+    //Incentives
+    updateIncentive(state, payload){
+      let incentive = state.submittedRuns.find(el1 => el1.incentives.find(el2 => el2.id === payload[0].id)).incentives.find(element => element.id === payload[0].id);
+      incentive.BidwarOptions = payload[0].bidwar_options;
+      incentive.comment = payload[0].comment;
+      incentive.name = payload[0].name;
     },
 
 

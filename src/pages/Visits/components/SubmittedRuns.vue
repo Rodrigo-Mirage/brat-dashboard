@@ -1,5 +1,6 @@
 <template>
   <div v-if="this.permissions.includes('Admin')">
+    <!-- Review Modal -->
     <b-modal 
       id='review-run' 
       :title="`Revisar run de #ID ` + curRunId"
@@ -37,6 +38,7 @@
         <hr/>
     </b-modal>
 
+    <!-- Submit Runs Table Constructor -->
     <b-row>
       <b-col>
         <Widget
@@ -85,6 +87,7 @@
                     </td>
                   </tr>
 
+                  <!-- Run Incentive Sub-Table Constructor -->
                   <tr v-show="toggle(idx)"
                     style="background-color: #303462; border-left: 1px solid black; border-right: 1px solid black;">
                     <td colspan="10" class="align-middle">
@@ -97,8 +100,9 @@
                               <th>Tipo</th>
                               <th>Opções</th>
                               <th>Comentário</th>
+                              <th>Editar Incentivo</th>
                               <th>Meta</th>
-                              <th></th>
+                              <th>Validação</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -106,10 +110,6 @@
                               v-show="toggle(idx)">
                               <td scope="col" class="align-middle">{{ incentive.id }} </td>
                               <td class="align-middle">
-                                <!-- 
-                                  :value = incentive.name
-                                  @input = "updateIncentive($event, incentive)"
-                                -->
                                 <input
                                   v-model="incentive.name"
                                   ref="name"
@@ -125,8 +125,14 @@
                               <td
                                 class="align-middle" 
                                 v-if="incentive.type === 'private'">
-                                <div v-for="option in incentive.BidwarOptions" :key="option.id">
-                                  {{ option.option }}
+                                <div v-for="(option, optIdx) in incentive.BidwarOptions" :key="optIdx">
+                                  {{ 'Opção ' + (optIdx+1) }}
+                                  <input
+                                    v-model="option.option"
+                                    ref="option"
+                                    class="form-control input-transparent pl-3"
+                                    type="text"
+                                  />
                                 </div>
                               </td>
                               <td v-else></td>
@@ -142,10 +148,23 @@
                                   class="form-control input-transparent pl-3"
                                 />
                               </td>
+
+                              <td>
+                                <b-button
+                                 @mouseenter="toggleEditHover" 
+                                 @mouseout="toggleEditHover" 
+                                 @click="editIncentive(row.id, incentive.id)" 
+                                 variant="dark"
+                                 >
+                                  Editar
+                                 </b-button>
+                              </td>
+
+
                               <td class="align-middle" v-if="incentive.type === 'none'">
                                 <input
-                                  v-model="incentiveGoal[incentive.id]"
-                                  :class="{invalid: !incentiveGoal[incentive.id] && row.approved_incentives[incentive.id]}"
+                                  v-model="row.goals[incentive.id]"
+                                  :class="{invalid: !row.goals[incentive.id] && row.approved_incentives[incentive.id]}"
                                   ref="goal"
                                   class="form-control input-transparent pl-3"
                                   type="number"
@@ -197,8 +216,6 @@ export default {
       showIncentives: true,
       toggleIncentive: {},
 
-
-      incentiveGoal: {},
       evaluationError: '',
       evaluateOptions: [
         { text: 'Aceitar', value: true },
@@ -207,6 +224,7 @@ export default {
     }
   },
   methods: {
+    //Row Fomartting Functions
     getStatus(reviewed, approved, waiting){
       // 0 = Não revisada
       // 1 = Aprovada
@@ -245,7 +263,7 @@ export default {
       return '';
     },
 
-    //Review Modal
+    //Review Modal and Requests
     reviewRun(id){
       this.evaluationError = '';
       this.curRunId = id;
@@ -268,8 +286,12 @@ export default {
         if(run.reviewed === true && run.approved === true && run.waiting === false) return this.evaluationError = "A run já foi aprovada.";
 
         for(let incentive in run.incentives){
-          if(run.incentives[incentive].type === 'none' && (!(run.incentives[incentive].id in this.incentiveGoal) || this.incentiveGoal[run.incentives[incentive].id] === '')) return this.evaluationError = "Por favor, preecha todas as metas.";
+          if(run.incentives[incentive].type === 'none' &&
+           run.approved_incentives[run.incentives[incentive].id] === true
+            && isNaN(run.goals[run.incentives[incentive].id])) return this.evaluationError = "Por favor, preecha todas as metas.";
         }
+
+
 
         //Generate the websocket payload based on the incentives.
         if(run.incentives.length > 0){
@@ -282,7 +304,7 @@ export default {
                   "id": incentive.id,
                   "run_id": incentive.run_id,
                   "type": incentive.type,
-                  "goal": this.incentiveGoal[incentive.id],
+                  "goal": run.goals[incentive.id],
                 });
               }else{
                 let bidwarOption = []
@@ -347,6 +369,12 @@ export default {
         }
         if(run.reviewed === true && run.approved === true && run.waiting === true) return this.evaluationError = "A run já está na fila.";
 
+        for(let incentive in run.incentives){
+          if(run.incentives[incentive].type === 'none' &&
+           run.approved_incentives[run.incentives[incentive].id] === true
+            && isNaN(run.goals[run.incentives[incentive].id])) return this.evaluationError = "Por favor, preecha todas as metas.";
+        }
+
         //Generate the websocket payload based on the incentives.
         if(run.incentives.length > 0){
           let curIncentives = [];
@@ -358,7 +386,7 @@ export default {
                   "id": incentive.id,
                   "run_id": incentive.run_id,
                   "type": incentive.type,
-                  "goal": this.incentiveGoal[incentive.id],
+                  "goal": run.goals[incentive.id],
                 });
               }else{
                 let bidwarOption = []
@@ -392,7 +420,7 @@ export default {
       this.$bvModal.hide('review-run');
     },
 
-    //Incentives
+    //Incentives Constrollers
     toggleIncentives(idx){
       let value;
       if(this.toggleIncentive === undefined){
@@ -406,6 +434,28 @@ export default {
       if(this.toggleIncentive[idx] === undefined) return false;
       return this.toggleIncentive[idx];
     },
+    editIncentive(runId, incentiveId){
+      const run = this.submittedRuns.find(element => element.id === runId)
+      const incentive = run.incentives.find(element => element.id === incentiveId);
+      const wsPayload = {
+        "endpoint":"updateIncentive", 
+        "id":this.curReq, 
+        "info":{ 
+          "id": incentive.id, 
+          "name": incentive.name, 
+          "comment": incentive.comment, 
+          "goal": run.goals[incentive.id], 
+          "bidwar_options": incentive.BidwarOptions 
+        }
+      };
+      this.$store.commit('layout/SOCKET_SEND', wsPayload);
+    },
+    toggleEditHover(){
+      //console.log('foi');
+      return;
+    },
+
+    //Debounce Test
     updateIncentive: _.debounce(function (e, incentive) {
       console.log(e.target.value);
       console.log(incentive);
@@ -432,14 +482,14 @@ export default {
 
 
 <style scoped>
-/* Chrome, Safari, Edge, Opera */
+/* Remove textarea scroller from Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Firefox */
+/* Remove textarea scroller from Firefox */
 input[type=number] {
   -moz-appearance: textfield;
 }

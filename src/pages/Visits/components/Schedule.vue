@@ -149,8 +149,18 @@
 
                   <td class="align-middle" v-show="dragEnabled" v-if="row.type !== 'setup'"> <b-button @click="addSetup(idx)" variant="dark">Adicionar setup</b-button> </td>
                   <td v-else> </td>
+
+                  <td v-if="row.type === 'run'">
+                    <b-button @click="toggleDonation(row.id)" variant="dark"> Doar </b-button>
+                  </td>
+                  <td v-else></td>
+
+
                   <td class="align-middle" v-show="dragEnabled"><i class="fa fa-times close" @click="removeAt(row.order-1)"></i> </td>
                 </tr>
+
+                <Donation @closeDonation="toggleDonation" v-if="showDonation" :runScheduleId=donationRun />
+
               </draggable>
             </table>
             <div v-else>A agenda está vazia!</div>
@@ -170,6 +180,7 @@
 <script>
 import Widget from '@/components/Widget/Widget';
 import draggable from 'vuedraggable';
+import Donation from './Donation';
 import { mapState } from 'vuex';
 const moment = require('moment');
 let curTime = 0;
@@ -184,6 +195,10 @@ export default {
 
       setupTime: '00:10:00',
       dragEnabled: true,
+
+      //Donation tab
+      showDonation: false,
+      donationRun: null,
     }
   },
   created(){
@@ -378,6 +393,11 @@ export default {
     //Toggle Drag and Drop
     toggleDrag(){
       this.dragEnabled = !this.dragEnabled;
+    },
+    //Donation
+    toggleDonation(id){
+      this.donationRun = id
+      this.showDonation = !this.showDonation;
     }
   },
   computed: {
@@ -396,7 +416,8 @@ export default {
   },
   components:{
     Widget,
-    draggable
+    draggable,
+    Donation
   },
 };
 </script>
