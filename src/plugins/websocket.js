@@ -1,5 +1,6 @@
 export default function websocket(){
-  const wss = new WebSocket('ws://localhost:3000');
+  const wss = new WebSocket('ws://161.35.116.60:3000');
+  //const wss = new WebSocket('ws://localhost:3000');
   return store => {
     wss.addEventListener('message', function (event){
       let payload = JSON.parse(event.data);
